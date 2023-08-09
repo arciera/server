@@ -1,9 +1,9 @@
 import * as net from "node:net";
 import EventEmitter from "node:events";
-import Packet from "./Packet.js";
-import path from "path";
-import { Config } from "./Config.js";
 import { PathLike } from "node:fs";
+import path from "node:path";
+import Packet from "./Packet.js";
+import { Config } from "./Config.js";
 import Logger from "./Logger.js";
 
 export default class Server extends EventEmitter {
