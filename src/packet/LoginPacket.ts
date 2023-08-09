@@ -49,7 +49,7 @@ export default class LoginPacket {
     public static isThisPacket(data: Packet): boolean {
         const p = new this(data);
         try {
-            return p.id === this.id && p.data.username.length > 0;
+            return p.id === this.id && p.data.username.match(/^[.*]?[A-Za-z0-9_]{3,16}$/) !== null;
         }
         catch {
             return false;
