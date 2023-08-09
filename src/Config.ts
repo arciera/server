@@ -1,4 +1,5 @@
-import { readFile, stat } from "node:fs/promises";
+import { open } from "node:fs/promises";
+import Logger from "./Logger.js";
 
 export class Config {
     public port: number = 25565;
@@ -10,14 +11,14 @@ export class Config {
      */
     public static async fromFile(file: string): Promise<Config> {
         try {
-            const stats = await stat(file);
-            if (!stats.isFile()) throw new Error("Config file is not a file");
+            const fd = await open(file, "r");
+            const data = await fd.readFile("utf-8");
+            const config = JSON.parse(data) as Config;
+            return config;
         } catch {
-            throw new Error("Config file does not exist");
+            new Logger("Config").error("Failed to read config file, using default config");
+            return new Config();
         }
-        const data = await readFile(file, "utf-8");
-        const config = JSON.parse(data) as Config;
-        return config;
     }
 
 }
