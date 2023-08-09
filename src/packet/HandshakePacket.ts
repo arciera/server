@@ -2,6 +2,7 @@ import * as net from "node:net";
 import {TypedPacketStatic} from "../TypedPacket";
 import StaticImplements from "../decorator/StaticImplements.js";
 import Packet from "../Packet.js";
+import Server from "../Server.js";
 
 @StaticImplements<TypedPacketStatic>()
 export default class HandshakePacket {
@@ -46,8 +47,8 @@ export default class HandshakePacket {
         return this.packet.data[this.packet.data.length - 1]!;
     }
 
-    execute(_socket: net.Socket): void {
-        console.log("HandshakePacket", this.packet.data, this.protocolVersion, this.serverAddress, this.serverPort, this.nextState);
+    execute(_socket: net.Socket, server: Server): void {
+        server.logger.info("HandshakePacket", this.packet.data, this.protocolVersion, this.serverAddress, this.serverPort, this.nextState);
     }
 
     public static readonly id = 0x00;

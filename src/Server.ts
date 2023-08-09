@@ -1,12 +1,14 @@
 import * as net from "node:net";
 import EventEmitter from "node:events";
 import Packet from "./Packet.js";
+import Logger from "./Logger.js";
 
 export default class Server extends EventEmitter {
     public readonly port: Number;
 
     private readonly server = net.createServer();
     private currentPacketFragment: Packet = new Packet();
+    public readonly logger = new Logger("Server");
 
     public constructor(port: Number) {
         super();
@@ -21,7 +23,7 @@ export default class Server extends EventEmitter {
     private incomingPacketFragment(socket: net.Socket, data: number) {
         if (this.currentPacketFragment.push(data)) {
             const p = this.currentPacketFragment.getTyped();
-            if (p) p.execute(socket);
+            if (p) p.execute(socket, this);
             else this.emit("unknownPacket", this.currentPacketFragment, socket);
             this.currentPacketFragment = new Packet();
         }
