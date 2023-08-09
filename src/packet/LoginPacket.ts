@@ -2,6 +2,7 @@ import * as net from "node:net";
 import {TypedPacketStatic} from "../TypedPacket";
 import StaticImplements from "../decorator/StaticImplements.js";
 import Packet from "../Packet.js";
+import Server from "../Server";
 
 @StaticImplements<TypedPacketStatic>()
 export default class LoginPacket {
@@ -43,8 +44,8 @@ export default class LoginPacket {
         return uuid.toString("hex");
     }
 
-    execute(_socket: net.Socket): void {
-        console.log("LoginPacket", this.packet.data, this.username, this.hasUUID, this.uuid);
+    execute(_socket: net.Socket, server: Server): void {
+        server.logger.info("LoginPacket", this.packet.data, this.username, this.hasUUID, this.uuid);
         // … socket.write();
     }
 
