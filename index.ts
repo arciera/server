@@ -1,6 +1,9 @@
+import Config from "./src/Config.js";
 import Server from "./src/Server.js";
 
-const server = new Server(25566);
+const config: Config = await Config.fromFile("config.json");
+
+const server = new Server(config);
 server.start();
 server.on("listening", (port) => server.logger.info(`Listening on port ${port}`));
 

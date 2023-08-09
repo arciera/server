@@ -1,6 +1,8 @@
 import * as net from "node:net";
 import EventEmitter from "node:events";
+import path from "node:path";
 import Packet from "./Packet.js";
+import Config from "./Config.js";
 import Logger from "./Logger.js";
 import {TypedPacket} from "./TypedPacket";
 import TypedEventEmitter from "./TypedEventEmitter";
@@ -34,19 +36,20 @@ type ServerEvents = {
 };
 
 export default class Server extends (EventEmitter as new () => TypedEventEmitter<ServerEvents>) {
-    public readonly port: Number;
-
     private readonly server = net.createServer();
     private currentPacketFragment: Packet = new Packet();
     public readonly logger = new Logger("Server");
 
-    public constructor(port: Number) {
+    public static readonly path: string = path.dirname(path.join(new URL(import.meta.url).pathname, ".."));
+    public readonly config: Config;
+
+    public constructor(config: Config) {
         super();
-        this.port = port;
+        this.config = Object.freeze(config);
     }
 
     public start() {
-        this.server.listen(this.port, () => this.emit("listening", this.port));
+        this.server.listen(this.config.port, () => this.emit("listening", this.config.port));
         this.server.on("connection", this.onConnection.bind(this));
     }
 
