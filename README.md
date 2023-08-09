@@ -1,6 +1,6 @@
-# ArchCraft Minecraft Server Clone
+# ArchCraft
 
-ArchCraft is a minimalistic, modular, and lightweight Minecraft server clone written in TypeScript and powered by Node.js.
+ArchCraft is a minimalistic, modular, and lightweight Minecraft server written in TypeScript and powered by Node.js.
 
 ## Features
 
@@ -10,6 +10,10 @@ ArchCraft is a minimalistic, modular, and lightweight Minecraft server clone wri
 - **Customizability:** Server administrators can customize various aspects of the server to tailor the gameplay experience.
 - **Small Footprint:** The server is small in size, using zero external dependencies.
 
+## Requirements
+- Node.js v18 or higher
+- npm v8 or higher
+
 ## Getting Started
 
 To run ArchCraft on your machine, follow these steps:
@@ -17,4 +21,4 @@ To run ArchCraft on your machine, follow these steps:
 1. Clone the ArchCraft repository `git clone https://github.com/zefir-git/archcraft.git`
 2. Install dependencies `npm install`
 3. Configure your server settings in `config.json`.
-4. Start the server `npm start`
+4. Start the server `npm build:start`
