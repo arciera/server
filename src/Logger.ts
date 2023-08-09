@@ -19,7 +19,7 @@ class Logger {
      * @param message Message to format
      */
     private format(level: Logger.Level, message: string): string {
-        return `${Logger.text256(240)}[${new Date().toISOString()}]${Logger.ansi.format.reset}${Logger.level[level]}[${this.name}/${level}]${Logger.ansi.format.reset} ${message}${Logger.ansi.format.reset}`;
+        return `${Logger.text256(240)}[${new Date().toISOString()}] ${Logger.ansi.format.reset}${Logger.level[level]}[${this.name}/${level}]${Logger.ansi.format.reset} ${message}${Logger.ansi.format.reset}`;
     }
 
     /**
