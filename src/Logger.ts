@@ -165,7 +165,7 @@ class Logger {
      * @param green Green value from 0 to 255
      * @param blue Blue value from 0 to 255
      */
-    public static textHEX(red: number, green: number, blue: number): string {
+    public static textRGB(red: number, green: number, blue: number): string {
         return `\x1b[38;2;${red};${green};${blue}m`;
     }
 
@@ -175,7 +175,7 @@ class Logger {
      * @param green Green value from 0 to 255
      * @param blue Blue value from 0 to 255
      */
-    public static backgroundHEX(red: number, green: number, blue: number): string {
+    public static backgroundRGB(red: number, green: number, blue: number): string {
         return `\x1b[48;2;${red};${green};${blue}m`;
     }
 }
