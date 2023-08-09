@@ -1,7 +1,9 @@
 name: Bug Report
 description: File a bug report
 title: "[Bug]: "
-labels: ["bug"]
+labels: ["bug", "triage"]
+assignees:
+  - octocat
 body:
   - type: markdown
     attributes:
@@ -16,41 +18,26 @@ body:
       value: "A bug happened!"
     validations:
       required: true
-  - type: textarea
-    id: what-expect
-    attributes:
-      label: What did you expect to happen?
-      description: Tell us, what did you expect to happen?
-      placeholder: Tell us what you expected to see!
-      value: "I expected this to happen!"
-    validations:
-        required: false
   - type: dropdown
-    id: nodejs-version
+    id: version
     attributes:
-      label: Node.js Version
-      description: What version of Node.js are you using?
+      label: Version
+      description: What version of our server are you running?
       options:
-        - 16.x
-        - 18.x
-        - 20.x
-        - Other
-  - type: dropdown
+        - 0.0.1
     validations:
       required: false
   - type: dropdown
-    id: operating-system
+    id: browsers
     attributes:
-      label: Operating System
+      label: What Minecraft version are you running?
       multiple: true
       options:
-        - Windows
-        - Linux
-        - macOS
-        - Other
+        - 1.20.x and above
+        - 1.19.x and below
   - type: textarea
     id: logs
     attributes:
       label: Relevant log output
-      description: Please copy and paste any relevant log output.
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
       render: shell
