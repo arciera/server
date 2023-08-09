@@ -136,11 +136,11 @@ class Logger {
      * Level formatting
      */
     public static readonly level: Record<string, string> = Object.freeze({
+        "DEBUG": Logger.ansi.text.bright.magenta,
         "INFO": Logger.ansi.text.bright.blue,
+        "SUCCESS": Logger.ansi.text.bright.green,
         "WARN": Logger.ansi.text.bright.yellow,
         "ERROR": Logger.ansi.text.bright.red,
-        "SUCCESS": Logger.ansi.text.bright.green,
-        "DEBUG": Logger.ansi.text.bright.magenta
     });
 
     /**
