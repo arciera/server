@@ -140,7 +140,7 @@ class Logger {
         "WARN": Logger.ansi.text.bright.yellow,
         "ERROR": Logger.ansi.text.bright.red,
         "SUCCESS": Logger.ansi.text.bright.green,
-        "DEBUG": Logger.ansi.text.bright.white
+        "DEBUG": Logger.ansi.text.bright.magenta
     });
 
     /**
