@@ -5,8 +5,8 @@ const config: Config = await Config.fromFile("config.json");
 
 const server = new Server(config);
 server.start();
-server.on("listening", (port) => console.log(`Listening on port ${port}`));
+server.on("listening", (port) => server.logger.info(`Listening on port ${port}`));
 server.on("unknownPacket", (packet, socket) => {
-    console.log("Unknown packet, disconnecting", packet.data);
+    server.logger.warn("Unknown packet, disconnecting", packet.data);
     socket.end();
 });
