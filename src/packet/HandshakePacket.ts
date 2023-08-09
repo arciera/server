@@ -7,6 +7,7 @@ import Server from "../Server.js";
 @StaticImplements<TypedPacketStatic>()
 export default class HandshakePacket {
     public readonly packet: Packet;
+
     public get id(): number {
         return this.packet.data[1]!;
     }
@@ -19,42 +20,38 @@ export default class HandshakePacket {
         this.packet = packet;
     }
 
-    /**
-     * Get protocol version
-     */
-    public get protocolVersion(): number {
-        return Packet.parseVarInt(this.packet.data.subarray(2, 4));
+    public get data() {
+        return {
+            /**
+             * Protocol version
+             */
+            protocolVersion: Packet.parseVarInt(this.packet.data.subarray(2, 4)),
+            /**
+             * Server address
+             */
+            serverAddress: this.packet.data.subarray(5, 5 + this.packet.data[4]!).toString(),
+            /**
+             * Server port
+             */
+            serverPort: this.packet.data.readUInt16BE(5 + this.packet.data[4]!),
+            /**
+             * Next state
+             */
+            nextState: this.packet.data[this.packet.data.length - 1]!
+        } as const;
     }
 
-    /**
-     * Get server address
-     */
-    public get serverAddress(): string {
-        return this.packet.data.subarray(5, 5 + this.packet.data[4]!).toString();
-    }
-
-    /**
-     * Get server port
-     */
-    public get serverPort(): number {
-        return this.packet.data.readUInt16BE(5 + this.packet.data[4]!);
-    }
-
-    /**
-     * Get next state
-     */
-    public get nextState(): number {
-        return this.packet.data[this.packet.data.length - 1]!;
-    }
-
-    execute(_socket: net.Socket, server: Server): void {
-        server.logger.info("HandshakePacket", this.packet.data, this.protocolVersion, this.serverAddress, this.serverPort, this.nextState);
-    }
+    execute(_socket: net.Socket, _server: Server): void {}
 
     public static readonly id = 0x00;
 
     public static isThisPacket(data: Packet): boolean {
         const p = new this(data);
-        return p.id === this.id && p.nextState === 2;
+        try {
+            return p.id === this.id && p.data.nextState === 2;
+        }
+        catch {
+            return false;
+        }
     }
 }

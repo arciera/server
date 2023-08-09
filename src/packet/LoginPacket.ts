@@ -19,40 +19,40 @@ export default class LoginPacket {
         this.packet = packet;
     }
 
-    /**
-     * Get player username
-     */
-    public get username(): string {
-        return this.packet.data.subarray(3, 3 + this.packet.data[2]!).toString();
-    }
-
-    /**
-     * Whether player has UUID
-     */
-    public get hasUUID(): boolean {
+    private get hasUUID() {
         return this.packet.data[3 + this.packet.data[2]!] === 0x01;
     }
 
-    /**
-     * Get player UUID
-     *
-     * Encoded as an unsigned 128-bit integer (or two unsigned 64-bit integers: the most significant 64 bits and then the least significant 64 bits)
-     */
-    public get uuid(): string | null {
-        if (!this.hasUUID) return null;
-        const uuid = this.packet.data.subarray(4 + this.packet.data[2]!, 4 + this.packet.data[2]! + 16);
-        return uuid.toString("hex");
+    public get data() {
+        return {
+            /**
+             * Player username
+             */
+            username: this.packet.data.subarray(3, 3 + this.packet.data[2]!).toString(),
+
+            /**
+             * Whether player has UUID
+             */
+            hasUUID: this.hasUUID,
+
+            /**
+             * Player UUID
+             */
+            uuid: this.hasUUID ? this.packet.data.subarray(4 + this.packet.data[2]!, 4 + this.packet.data[2]! + 16).toString("hex") : null
+        } as const;
     }
 
-    execute(_socket: net.Socket, server: Server): void {
-        server.logger.info("LoginPacket", this.packet.data, this.username, this.hasUUID, this.uuid);
-        // … socket.write();
-    }
+    execute(_socket: net.Socket, _server: Server): void {}
 
     public static readonly id = 0x00;
 
     public static isThisPacket(data: Packet): boolean {
         const p = new this(data);
-        return p.id === this.id && p.username.length > 0;
+        try {
+            return p.id === this.id && p.data.username.length > 0;
+        }
+        catch {
+            return false;
+        }
     }
 }

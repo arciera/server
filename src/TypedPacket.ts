@@ -4,7 +4,7 @@ import Server from "./Server";
 
 export interface TypedPacket {
     readonly packet: Packet;
-
+    get data(): Record<string, any>;
     execute(socket: net.Socket, server: Server): void;
 }
 
