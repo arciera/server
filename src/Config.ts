@@ -9,7 +9,6 @@ export class Config {
      * @returns a promise that resolves to a Config instance
      */
     public static async fromFile(file: string): Promise<Config> {
-        const config = new Config();
         try {
             const stats = await stat(file);
             if (!stats.isFile()) throw new Error("Config file is not a file");
@@ -17,8 +16,7 @@ export class Config {
             throw new Error("Config file does not exist");
         }
         const data = await readFile(file, "utf-8");
-        const parsed = JSON.parse(data) as Config;
-        config.port = parsed.port;
+        const config = JSON.parse(data) as Config;
         return config;
     }
 
