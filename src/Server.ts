@@ -4,7 +4,7 @@ import Packet from "./Packet.js";
 import path from "path";
 import { Config } from "./Config.js";
 import { PathLike } from "node:fs";
-import Logger from "./Logger.js
+import Logger from "./Logger.js";
 
 export default class Server extends EventEmitter {
 
