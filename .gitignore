@@ -132,6 +132,3 @@ dist
 *.js
 *.d.ts
 .idea
-
-# keep the dist directory
-!dist/
