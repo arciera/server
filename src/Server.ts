@@ -4,11 +4,13 @@ import Packet from "./Packet.js";
 import path from "path";
 import { Config } from "./Config.js";
 import { PathLike } from "node:fs";
+import Logger from "./Logger.js
 
 export default class Server extends EventEmitter {
 
     private readonly server = net.createServer();
     private currentPacketFragment: Packet = new Packet();
+    public readonly logger = new Logger("Server");
 
     public static readonly path: PathLike = path.dirname(path.join(new URL(import.meta.url).pathname, ".."));
     public readonly config: Config;
@@ -26,7 +28,7 @@ export default class Server extends EventEmitter {
     private incomingPacketFragment(socket: net.Socket, data: number) {
         if (this.currentPacketFragment.push(data)) {
             const p = this.currentPacketFragment.getTyped();
-            if (p) p.execute(socket);
+            if (p) p.execute(socket, this);
             else this.emit("unknownPacket", this.currentPacketFragment, socket);
             this.currentPacketFragment = new Packet();
         }
