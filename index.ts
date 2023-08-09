@@ -1,7 +1,7 @@
 import { Config } from "./src/Config.js";
 import Server from "./src/Server.js";
 
-const config: Config = new Config("config.json");
+const config: Config = await Config.fromFile("config.json");
 
 const server = new Server(config);
 server.start();
