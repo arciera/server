@@ -14,6 +14,7 @@ export default class Config {
             const fd = await open(file, "r");
             const data = await fd.readFile("utf-8");
             const config = JSON.parse(data) as Config;
+            fd.close();
             return config;
         } catch {
             new Logger("Config").error("Failed to read config file, using default config");

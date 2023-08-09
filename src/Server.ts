@@ -1,6 +1,5 @@
 import * as net from "node:net";
 import EventEmitter from "node:events";
-import { PathLike } from "node:fs";
 import path from "node:path";
 import Packet from "./Packet.js";
 import Config from "./Config.js";
@@ -12,7 +11,7 @@ export default class Server extends EventEmitter {
     private currentPacketFragment: Packet = new Packet();
     public readonly logger = new Logger("Server");
 
-    public static readonly path: PathLike = path.dirname(path.join(new URL(import.meta.url).pathname, ".."));
+    public static readonly path: string = path.dirname(path.join(new URL(import.meta.url).pathname, ".."));
     public readonly config: Config;
 
     public constructor(config: Config) {
