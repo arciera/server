@@ -6,7 +6,6 @@ import { Config } from "./Config.js";
 import { PathLike } from "node:fs";
 
 export default class Server extends EventEmitter {
-    public readonly port: Number;
 
     private readonly server = net.createServer();
     private currentPacketFragment: Packet = new Packet();
@@ -16,12 +15,11 @@ export default class Server extends EventEmitter {
 
     public constructor(config: Config) {
         super();
-        this.config = config;
-        this.port = config.port;
+        this.config = Object.freeze(config);
     }
 
     public start() {
-        this.server.listen(this.port, () => this.emit("listening", this.port));
+        this.server.listen(this.config.port, () => this.emit("listening", this.config.port));
         this.server.on("connection", this.onConnection.bind(this));
     }
 
