@@ -1,4 +1,4 @@
-import { Config } from "./src/Config.js";
+import Config from "./src/Config.js";
 import Server from "./src/Server.js";
 
 const config: Config = await Config.fromFile("config.json");

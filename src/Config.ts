@@ -1,7 +1,7 @@
 import { open } from "node:fs/promises";
 import Logger from "./Logger.js";
 
-export class Config {
+export default class Config {
     public port: number = 25565;
 
     /**
