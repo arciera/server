@@ -38,7 +38,7 @@ type ServerEvents = {
 export default class Server extends (EventEmitter as new () => TypedEventEmitter<ServerEvents>) {
     private readonly server = net.createServer();
     private currentPacketFragment: Packet = new Packet();
-    public readonly logger = new Logger("Server");
+    public readonly logger: Logger;
 
     public static readonly path: string = path.dirname(path.join(new URL(import.meta.url).pathname, ".."));
     public readonly config: Config;
@@ -46,6 +46,7 @@ export default class Server extends (EventEmitter as new () => TypedEventEmitter
     public constructor(config: Config) {
         super();
         this.config = Object.freeze(config);
+        this.logger = new Logger("Server", this.config);
     }
 
     public start() {

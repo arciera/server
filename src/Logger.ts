@@ -1,8 +1,12 @@
+import Config from "./Config";
+
 class Logger {
     private readonly name: string;
+    private readonly config: Config;
 
-    public constructor(name: string) {
+    public constructor(name: string, config: Config) {
         this.name = name;
+        this.config = config;
     }
 
     /**
@@ -29,7 +33,9 @@ class Logger {
      * @param [obj] Objects to print
      */
     public log(level: Logger.Level, message: string, ...obj: any[]): void {
-        this.send(this.format(level, message), ...obj);
+        if (this.shouldLog(level)) {
+            this.send(this.format(level, message), ...obj);
+        }
     }
 
     /**
@@ -67,6 +73,16 @@ class Logger {
     public success(message: string, ...obj: any[]): void {
         this.log(Logger.Level.SUCCESS, message, ...obj);
     }
+
+    /**
+     * Check if a log level should be logged
+     * @param level Log level
+     * @returns true if the log level should be logged
+     */
+    public shouldLog(level: Logger.Level): boolean {
+        return Logger.LevelHierarchy[level!]! >= Logger.LevelHierarchy[this.config.logLevel!]!;
+    }
+    
 
     /**
      * Log debug message
@@ -141,6 +157,17 @@ class Logger {
         "SUCCESS": Logger.ansi.text.bright.green,
         "WARN": Logger.ansi.text.bright.yellow,
         "ERROR": Logger.ansi.text.bright.red,
+    });
+
+    /**
+     * Level hierarchy
+     */
+    public static readonly LevelHierarchy: Record<string, number> = Object.freeze({
+        DEBUG: 0,
+        INFO: 1,
+        SUCCESS: 2,
+        WARN: 3,
+        ERROR: 4,
     });
 
     /**
