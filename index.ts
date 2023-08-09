@@ -7,17 +7,17 @@ const server = new Server(config);
 server.start();
 server.on("listening", (port) => server.logger.info(`Listening on port ${port}`));
 
-server.on("unknownPacket", (packet, socket) => {
+server.on("unknownPacket", (packet, conn) => {
     server.logger.warn("Unknown packet, disconnecting", packet.data);
-    socket.end();
+    conn.disconnect().then();
 });
-server.on("packet", (packet, _socket) => {
+server.on("packet", (packet, _conn) => {
     server.logger.debug(packet.constructor.name, packet.data);
 });
 
-server.on("connection", (socket) => {
+server.on("connection", (conn) => {
     server.logger.debug("Connection", {
-        ip: socket.remoteAddress,
-        port: socket.remotePort
+        ip: conn.socket.remoteAddress,
+        port: conn.socket.remotePort
     });
 });

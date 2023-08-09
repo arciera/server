@@ -6,6 +6,8 @@ import Config from "./Config.js";
 import Logger from "./Logger.js";
 import {TypedPacket} from "./TypedPacket";
 import TypedEventEmitter from "./TypedEventEmitter";
+import ConnectionPool from "./ConnectionPool.js";
+import Connection from "./Connection.js";
 
 type ServerEvents = {
     /**
@@ -19,26 +21,26 @@ type ServerEvents = {
      * @param packet Packet that was received
      * @param socket Socket the packet was received from
      */
-    unknownPacket: (packet: Packet, socket: net.Socket) => void;
+    unknownPacket: (packet: Packet, socket: Connection) => void;
 
     /**
      * Known packet received
      * @param packet Packet that was received
      * @param socket Socket the packet was received from
      */
-    packet: (packet: TypedPacket, socket: net.Socket) => void;
+    packet: (packet: TypedPacket, socket: Connection) => void;
 
     /**
      * New connection established
      * @param socket Socket the connection was established on
      */
-    connection: (socket: net.Socket) => void;
+    connection: (socket: Connection) => void;
 };
 
 export default class Server extends (EventEmitter as new () => TypedEventEmitter<ServerEvents>) {
     private readonly server = net.createServer();
-    private currentPacketFragment: Packet = new Packet();
     public readonly logger = new Logger("Server");
+    public readonly connections: ConnectionPool = new ConnectionPool();
 
     public static readonly path: string = path.dirname(path.join(new URL(import.meta.url).pathname, ".."));
     public readonly config: Config;
@@ -53,23 +55,13 @@ export default class Server extends (EventEmitter as new () => TypedEventEmitter
         this.server.on("connection", this.onConnection.bind(this));
     }
 
-    private incomingPacketFragment(socket: net.Socket, data: number) {
-        if (this.currentPacketFragment.push(data)) {
-            const p = this.currentPacketFragment.getTyped();
-            if (p) {
-                this.emit("packet", p, socket);
-                p.execute(socket, this);
-            }
-            else this.emit("unknownPacket", this.currentPacketFragment, socket);
-            this.currentPacketFragment = new Packet();
-        }
-    }
-
     private onConnection(socket: net.Socket) {
-        this.emit("connection", socket);
+        const conn = new Connection(socket, this);
+        this.connections.add(conn);
+        this.emit("connection", conn);
         socket.on("data", (data) => {
             for (const byte of data)
-                this.incomingPacketFragment(socket, byte);
+                conn.incomingPacketFragment(byte);
         });
     }
 }
