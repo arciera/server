@@ -1,6 +1,9 @@
+import { Config } from "./src/Config.js";
 import Server from "./src/Server.js";
 
-const server = new Server(25566);
+const config: Config = new Config("config.json");
+
+const server = new Server(config);
 server.start();
 server.on("listening", (port) => console.log(`Listening on port ${port}`));
 server.on("unknownPacket", (packet, socket) => {
