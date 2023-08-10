@@ -6,15 +6,17 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js",
     "build:start": "npm run build && npm run start",
+    "bundle": "ncc build ./index.ts -o build -m",
+    "start": "node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "GNU GPLv3",
   "devDependencies": {
     "@types/node": "^20.4.9",
-    "typescript": "^5.1.6"
+    "typescript": "^5.1.6",
+    "@vercel/ncc": "^0.36.1"
   }
 }
