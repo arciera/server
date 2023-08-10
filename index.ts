@@ -1,5 +1,6 @@
 import Config from "./src/Config.js";
 import Server from "./src/Server.js";
+import LoginSuccessPacket from "./src/packet/server/LoginSuccessPacket.js";
 
 const config: Config = await Config.fromFile("config.json");
 
@@ -38,4 +39,8 @@ process.on("SIGINT", () => {
     process.stdout.write("\x1b[2D"); // Move cursor 2 characters left (clears ^C)
     if (server.isRunning) server.stop().then();
     else process.exit(0);
+});
+
+server.on("packet.LoginPacket", (packet, conn) => {
+    new LoginSuccessPacket(packet.data.uuid, packet.data.username).send(conn);
 });

@@ -1,11 +1,11 @@
-import * as net from "node:net";
 import Server from "./Server";
 import ParsedPacket from "./ParsedPacket";
+import Connection from "./Connection";
 
 export interface TypedClientPacket {
     readonly packet: ParsedPacket;
     readonly data: Record<string, any>;
-    execute(socket: net.Socket, server: Server): void;
+    execute(connection: Connection, server: Server): void;
 }
 
 export interface TypedClientPacketStatic {
