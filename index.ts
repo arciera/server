@@ -21,3 +21,14 @@ server.on("connection", (conn) => {
         port: conn.socket.remotePort
     });
 });
+
+server.on("closed", () => {
+    server.logger.info("Server closed");
+    process.exit(0);
+});
+
+process.on("SIGINT", () => {
+    process.stdout.write("\x1b[2D"); // Move cursor 2 characters left (clears ^C)
+    if (server.isRunning) server.stop().then();
+    else process.exit(0);
+});

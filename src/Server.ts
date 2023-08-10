@@ -35,6 +35,11 @@ type ServerEvents = {
      * @param socket Socket the connection was established on
      */
     connection: (socket: Connection) => void;
+
+    /**
+     * Server closed
+     */
+    closed: () => void;
 };
 
 export default class Server extends (EventEmitter as new () => TypedEventEmitter<ServerEvents>) {
@@ -53,6 +58,24 @@ export default class Server extends (EventEmitter as new () => TypedEventEmitter
     public start() {
         this.server.listen(this.config.port, () => this.emit("listening", this.config.port));
         this.server.on("connection", this.onConnection.bind(this));
+    }
+
+    public async stop(): Promise<void> {
+        this.logger.debug("Closing server...");
+        await Promise.all([
+            new Promise((resolve, reject) => {
+                this.server.close((err) => {
+                    if (err) reject(err);
+                    else resolve(void 0);
+                });
+            }),
+            this.connections.disconnect(),
+        ]).then(() => void 0);
+        this.emit("closed");
+    }
+
+    public get isRunning(): boolean {
+        return this.server.listening;
     }
 
     private onConnection(socket: net.Socket) {
