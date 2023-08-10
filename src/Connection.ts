@@ -38,7 +38,8 @@ export default class Connection {
             const p = this.currentPacketFragment.getTypedClient();
             if (p) {
                 this.server.emit("packet", p, this);
-                p.execute(this.socket, this.server);
+                this.server.emit(`packet.${p.constructor.name}` as any, p, this);
+                p.execute(this, this.server);
             }
             else this.server.emit("unknownPacket", this.currentPacketFragment, this);
             this.currentPacketFragment = new Packet();

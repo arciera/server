@@ -1,8 +1,8 @@
-import * as net from "node:net";
 import {TypedClientPacket, TypedClientPacketStatic} from "../../TypedPacket";
 import StaticImplements from "../../decorator/StaticImplements.js";
 import Server from "../../Server";
 import ParsedPacket from "../../ParsedPacket";
+import Connection from "../../Connection";
 
 @StaticImplements<TypedClientPacketStatic>()
 export default class HandshakePacket {
@@ -25,7 +25,7 @@ export default class HandshakePacket {
         } as const;
     }
 
-    execute(_socket: net.Socket, _server: Server): void {}
+    execute(_conn: Connection, _server: Server): void {}
 
     public static readonly id = 0x00;
 
