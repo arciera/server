@@ -19,22 +19,28 @@ type ServerEvents = {
     /**
      * Unknown packet received
      * @param packet Packet that was received
-     * @param socket Socket the packet was received from
+     * @param connection Connection the packet was received from
      */
-    unknownPacket: (packet: Packet, socket: Connection) => void;
+    unknownPacket: (packet: Packet, connection: Connection) => void;
 
     /**
      * Known packet received
      * @param packet Packet that was received
-     * @param socket Socket the packet was received from
+     * @param connection Connection the packet was received from
      */
-    packet: (packet: TypedClientPacket, socket: Connection) => void;
+    packet: (packet: TypedClientPacket, connection: Connection) => void;
 
     /**
      * New connection established
-     * @param socket Socket the connection was established on
+     * @param connection Connection that was established
      */
-    connection: (socket: Connection) => void;
+    connection: (connection: Connection) => void;
+
+    /**
+     * Connection closed
+     * @param connection Connection that was closed
+     */
+    disconnect: (connection: Connection) => void;
 };
 
 export default class Server extends (EventEmitter as new () => TypedEventEmitter<ServerEvents>) {
