@@ -1,17 +1,17 @@
-import * as net from "node:net";
-import Packet from "./Packet";
 import Server from "./Server";
+import ParsedPacket from "./ParsedPacket";
+import Connection from "./Connection";
 
-export interface TypedPacket {
-    readonly packet: Packet;
-    get data(): Record<string, any>;
-    execute(socket: net.Socket, server: Server): void;
+export interface TypedClientPacket {
+    readonly packet: ParsedPacket;
+    readonly data: Record<string, any>;
+    execute(connection: Connection, server: Server): void;
 }
 
-export interface TypedPacketStatic {
-    new(packet: Packet): TypedPacket;
+export interface TypedClientPacketStatic {
+    new(packet: ParsedPacket): TypedClientPacket;
 
     readonly id: number;
 
-    isThisPacket(data: Packet): boolean;
+    isThisPacket(data: ParsedPacket): TypedClientPacket | null;
 }

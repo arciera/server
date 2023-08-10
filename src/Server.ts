@@ -4,8 +4,12 @@ import path from "node:path";
 import Packet from "./Packet.js";
 import Config from "./Config.js";
 import Logger from "./Logger.js";
-import {TypedPacket} from "./TypedPacket";
+import {TypedClientPacket} from "./TypedPacket";
 import TypedEventEmitter from "./TypedEventEmitter";
+import ConnectionPool from "./ConnectionPool.js";
+import Connection from "./Connection.js";
+import HandshakePacket from "./packet/client/HandshakePacket";
+import LoginPacket from "./packet/client/LoginPacket";
 
 type ServerEvents = {
     /**
@@ -17,28 +21,53 @@ type ServerEvents = {
     /**
      * Unknown packet received
      * @param packet Packet that was received
-     * @param socket Socket the packet was received from
+     * @param connection Connection the packet was received from
      */
-    unknownPacket: (packet: Packet, socket: net.Socket) => void;
+    unknownPacket: (packet: Packet, connection: Connection) => void;
 
     /**
      * Known packet received
      * @param packet Packet that was received
-     * @param socket Socket the packet was received from
+     * @param connection Connection the packet was received from
      */
-    packet: (packet: TypedPacket, socket: net.Socket) => void;
+    packet: (packet: TypedClientPacket, connection: Connection) => void;
 
     /**
      * New connection established
-     * @param socket Socket the connection was established on
+     * @param connection Connection that was established
      */
-    connection: (socket: net.Socket) => void;
+    connection: (connection: Connection) => void;
+
+    /**
+     * Server closed
+     */
+    closed: () => void;
+
+    /**
+     * Connection closed
+     * @param connection Connection that was closed
+     */
+    disconnect: (connection: Connection) => void;
+
+    /**
+     * Handshake packet received
+     * @param packet Packet that was received
+     * @param connection Connection the packet was received from
+     */
+    "packet.HandshakePacket": (packet: HandshakePacket, connection: Connection) => void;
+
+    /**
+     * Login packet received
+     * @param packet Packet that was received
+     * @param connection Connection the packet was received from
+     */
+    "packet.LoginPacket": (packet: LoginPacket, connection: Connection) => void;
 };
 
 export default class Server extends (EventEmitter as new () => TypedEventEmitter<ServerEvents>) {
     private readonly server = net.createServer();
-    private currentPacketFragment: Packet = new Packet();
     public readonly logger: Logger;
+    public readonly connections: ConnectionPool = new ConnectionPool();
 
     public static readonly path: string = path.dirname(path.join(new URL(import.meta.url).pathname, ".."));
     public readonly config: Config;
@@ -54,23 +83,31 @@ export default class Server extends (EventEmitter as new () => TypedEventEmitter
         this.server.on("connection", this.onConnection.bind(this));
     }
 
-    private incomingPacketFragment(socket: net.Socket, data: number) {
-        if (this.currentPacketFragment.push(data)) {
-            const p = this.currentPacketFragment.getTyped();
-            if (p) {
-                this.emit("packet", p, socket);
-                p.execute(socket, this);
-            }
-            else this.emit("unknownPacket", this.currentPacketFragment, socket);
-            this.currentPacketFragment = new Packet();
-        }
+    public async stop(): Promise<void> {
+        this.logger.debug("Closing server...");
+        await Promise.all([
+            new Promise((resolve, reject) => {
+                this.server.close((err) => {
+                    if (err) reject(err);
+                    else resolve(void 0);
+                });
+            }),
+            this.connections.disconnect(),
+        ]).then(() => void 0);
+        this.emit("closed");
+    }
+
+    public get isRunning(): boolean {
+        return this.server.listening;
     }
 
     private onConnection(socket: net.Socket) {
-        this.emit("connection", socket);
+        const conn = new Connection(socket, this);
+        this.connections.add(conn);
+        this.emit("connection", conn);
         socket.on("data", (data) => {
             for (const byte of data)
-                this.incomingPacketFragment(socket, byte);
+                conn.incomingPacketFragment(byte);
         });
     }
 }
