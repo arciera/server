@@ -19,7 +19,7 @@ export default class Config {
             fd.close();
         } catch {
             config = new Config();
-            new Logger("Config", config).error("Failed to read config file, using default config");
+            new Logger("Config", config.logLevel).error("Failed to read config file, using default config");
         }
         return config;
     }

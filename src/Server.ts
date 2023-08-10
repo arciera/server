@@ -75,7 +75,7 @@ export default class Server extends (EventEmitter as new () => TypedEventEmitter
     public constructor(config: Config) {
         super();
         this.config = Object.freeze(config);
-        this.logger = new Logger("Server", this.config);
+        this.logger = new Logger("Server", this.config.logLevel);
     }
 
     public start() {

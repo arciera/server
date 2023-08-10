@@ -1,12 +1,10 @@
-import Config from "./Config";
-
 class Logger {
     private readonly name: string;
-    private readonly config: Config;
+    private readonly logLevel: Logger.Level;
 
-    public constructor(name: string, config: Config) {
+    public constructor(name: string, logLevel: Logger.Level) {
         this.name = name;
-        this.config = config;
+        this.logLevel = logLevel;
     }
 
     /**
@@ -80,7 +78,7 @@ class Logger {
      * @returns true if the log level should be logged
      */
     public shouldLog(level: Logger.Level): boolean {
-        return Logger.LevelHierarchy[level!]! >= Logger.LevelHierarchy[this.config.logLevel!]!;
+        return Logger.LevelHierarchy[level!]! >= Logger.LevelHierarchy[this.logLevel!]!;
     }
     
 
