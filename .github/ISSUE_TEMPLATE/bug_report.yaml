@@ -24,7 +24,7 @@ body:
       label: Version
       description: What version of our server are you running?
       options:
-        - 0.0.1
+        - v1.0.0
     validations:
       required: false
   - type: dropdown
@@ -40,4 +40,4 @@ body:
     attributes:
       label: Relevant log output
       description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
-      render: shell
+      render: "JavaScript"
