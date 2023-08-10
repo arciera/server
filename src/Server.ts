@@ -4,7 +4,7 @@ import path from "node:path";
 import Packet from "./Packet.js";
 import Config from "./Config.js";
 import Logger from "./Logger.js";
-import {TypedPacket} from "./TypedPacket";
+import {TypedClientPacket} from "./TypedPacket";
 import TypedEventEmitter from "./TypedEventEmitter";
 import ConnectionPool from "./ConnectionPool.js";
 import Connection from "./Connection.js";
@@ -28,7 +28,7 @@ type ServerEvents = {
      * @param packet Packet that was received
      * @param socket Socket the packet was received from
      */
-    packet: (packet: TypedPacket, socket: Connection) => void;
+    packet: (packet: TypedClientPacket, socket: Connection) => void;
 
     /**
      * New connection established

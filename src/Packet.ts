@@ -1,6 +1,7 @@
-import {TypedPacket, TypedPacketStatic} from "./TypedPacket";
-import HandshakePacket from "./packet/HandshakePacket.js";
-import LoginPacket from "./packet/LoginPacket.js";
+import ParsedPacket from "./ParsedPacket.js";
+import {TypedClientPacket, TypedClientPacketStatic} from "./TypedPacket";
+import HandshakePacket from "./packet/client/HandshakePacket.js";
+import LoginPacket from "./packet/client/LoginPacket.js";
 
 export default class Packet {
     readonly #data: number[];
@@ -19,15 +20,26 @@ export default class Packet {
      * The first byte in the packet is the length of the complete packet.
      */
     public get isComplete(): boolean {
-        const length = this.#data[0];
+        const length = this.expectedLength;
         if (!length) return false;
-        return this.data.byteLength - 1 === length;
+        return this.dataBuffer.byteLength - 1 === length;
+    }
+
+    public get expectedLength(): number {
+        return Packet.parseVarInt(Buffer.from(this.#data));
     }
 
     /**
      * Get packet data
      */
-    public get data(): Buffer {
+    public get data(): number[] {
+        return this.#data;
+    }
+
+    /**
+     * Get packet data
+     */
+    public get dataBuffer(): Buffer {
         return Buffer.from(this.#data);
     }
 
@@ -42,13 +54,10 @@ export default class Packet {
     }
 
     /**
-     * Get typed packet
+     * Parse packet
      */
-    public getTyped(): TypedPacket | null {
-        for (const type of Packet.types)
-            if (type.isThisPacket(this))
-                return new type(this);
-        return null;
+    public parse(): ParsedPacket {
+        return new ParsedPacket(this);
     }
 
     /**
@@ -73,6 +82,118 @@ export default class Packet {
         return result;
     }
 
+    /**
+     * Write VarInt
+     * @param value
+     */
+    public static writeVarInt(value: number): Buffer {
+        const buffer = Buffer.alloc(5);
+        let index = 0;
+
+        while (true) {
+            let byte = value & 0x7F;
+            value >>>= 7;
+
+            if (value !== 0) {
+                byte |= 0x80;
+            }
+
+            buffer[index++] = byte;
+
+            if (value === 0) {
+                break;
+            }
+        }
+
+        return buffer.subarray(0, index);
+    }
+
+    /**
+     * Parse String (n)
+     * @param buffer
+     */
+    public static parseString(buffer: Buffer): string {
+        const length = Packet.parseVarInt(buffer);
+        buffer = buffer.subarray(Packet.writeVarInt(length).length, Packet.writeVarInt(length).length + length);
+        return buffer.toString();
+    }
+
+
+    /**
+     * Write String (n)
+     * @param value
+     */
+    public static writeString(value: string): Buffer {
+        const length = Buffer.byteLength(value);
+        return Buffer.concat([Packet.writeVarInt(length), Buffer.from(value)]);
+    }
+
+    /**
+     * Parse boolean
+     * @param buffer
+     */
+    public static parseBoolean(buffer: Buffer): boolean {
+        return !!buffer.readUInt8(0);
+    }
+
+    /**
+     * Write boolean
+     * @param value
+     */
+    public static writeBoolean(value: boolean): Buffer {
+        return Buffer.from([value ? 1 : 0]);
+    }
+
+    /**
+     * Parse UUID
+     * @param buffer
+     */
+    public static parseUUID(buffer: Buffer): string {
+        return buffer.toString("hex", 0, 16);
+    }
+
+    /**
+     * Write UUID
+     * @param value
+     */
+    public static writeUUID(value: string): Buffer {
+        return Buffer.from(value, "hex");
+    }
+
+    /**
+     * Parse Unsigned Short
+     * @param buffer
+     */
+    public static parseUShort(buffer: Buffer): number {
+        return buffer.readUInt16BE(0);
+    }
+
+    /**
+     * Write Unsigned Short
+     * @param value
+     */
+    public static writeUShort(value: number): Buffer {
+        const buffer = Buffer.alloc(2);
+        buffer.writeUInt16BE(value);
+        return buffer;
+    }
+
+    /**
+     * Get typed client packet
+     */
+    public getTypedClient(): TypedClientPacket | null {
+        for (const type of Packet.clientTypes) {
+            const p = type.isThisPacket(this.parse());
+            if (p !== null) return p;
+        }
+        return null;
+    }
+
+    /**
+     * Packet types
+     */
+    public static readonly clientTypes: TypedClientPacketStatic[] = [HandshakePacket, LoginPacket];
+
 
     /**
      * Split buffer
@@ -91,9 +212,4 @@ export default class Packet {
         buffers.push(buffer.subarray(lastPosition));
         return buffers;
     }
-
-    /**
-     * Packet types
-     */
-    public static readonly types: TypedPacketStatic[] = [HandshakePacket, LoginPacket];
 }
