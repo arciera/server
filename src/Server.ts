@@ -8,6 +8,8 @@ import {TypedClientPacket} from "./TypedPacket";
 import TypedEventEmitter from "./TypedEventEmitter";
 import ConnectionPool from "./ConnectionPool.js";
 import Connection from "./Connection.js";
+import HandshakePacket from "./packet/client/HandshakePacket";
+import LoginPacket from "./packet/client/LoginPacket";
 
 type ServerEvents = {
     /**
@@ -41,6 +43,20 @@ type ServerEvents = {
      * @param connection Connection that was closed
      */
     disconnect: (connection: Connection) => void;
+
+    /**
+     * Handshake packet received
+     * @param packet Packet that was received
+     * @param connection Connection the packet was received from
+     */
+    "packet.HandshakePacket": (packet: HandshakePacket, connection: Connection) => void;
+
+    /**
+     * Login packet received
+     * @param packet Packet that was received
+     * @param connection Connection the packet was received from
+     */
+    "packet.LoginPacket": (packet: LoginPacket, connection: Connection) => void;
 };
 
 export default class Server extends (EventEmitter as new () => TypedEventEmitter<ServerEvents>) {

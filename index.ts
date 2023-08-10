@@ -1,5 +1,6 @@
 import Config from "./src/Config.js";
 import Server from "./src/Server.js";
+import LoginSuccessPacket from "./src/packet/server/LoginSuccessPacket.js";
 
 const config: Config = await Config.fromFile("config.json");
 
@@ -27,4 +28,8 @@ server.on("disconnect", (conn) => {
         ip: conn.socket.remoteAddress,
         port: conn.socket.remotePort
     });
+});
+
+server.on("packet.LoginPacket", (packet, conn) => {
+    new LoginSuccessPacket(packet.data.uuid, packet.data.username).send(conn);
 });
