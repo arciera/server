@@ -8,7 +8,7 @@ server.start();
 server.on("listening", (port) => server.logger.info(`Listening on port ${port}`));
 
 server.on("unknownPacket", (packet, conn) => {
-    server.logger.warn("Unknown packet, disconnecting", packet.data);
+    server.logger.warn("Unknown packet, disconnecting", packet.dataBuffer);
     conn.disconnect().then();
 });
 server.on("packet", (packet, _conn) => {
@@ -20,4 +20,22 @@ server.on("connection", (conn) => {
         ip: conn.socket.remoteAddress,
         port: conn.socket.remotePort
     });
+});
+
+server.on("disconnect", (conn) => {
+    server.logger.debug("Disconnect", {
+        ip: conn.socket.remoteAddress,
+        port: conn.socket.remotePort
+    });
+});
+
+server.on("closed", () => {
+    server.logger.info("Server closed");
+    process.exit(0);
+});
+
+process.on("SIGINT", () => {
+    process.stdout.write("\x1b[2D"); // Move cursor 2 characters left (clears ^C)
+    if (server.isRunning) server.stop().then();
+    else process.exit(0);
 });

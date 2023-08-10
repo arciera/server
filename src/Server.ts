@@ -4,7 +4,7 @@ import path from "node:path";
 import Packet from "./Packet.js";
 import Config from "./Config.js";
 import Logger from "./Logger.js";
-import {TypedPacket} from "./TypedPacket";
+import {TypedClientPacket} from "./TypedPacket";
 import TypedEventEmitter from "./TypedEventEmitter";
 import ConnectionPool from "./ConnectionPool.js";
 import Connection from "./Connection.js";
@@ -19,22 +19,33 @@ type ServerEvents = {
     /**
      * Unknown packet received
      * @param packet Packet that was received
-     * @param socket Socket the packet was received from
+     * @param connection Connection the packet was received from
      */
-    unknownPacket: (packet: Packet, socket: Connection) => void;
+    unknownPacket: (packet: Packet, connection: Connection) => void;
 
     /**
      * Known packet received
      * @param packet Packet that was received
-     * @param socket Socket the packet was received from
+     * @param connection Connection the packet was received from
      */
-    packet: (packet: TypedPacket, socket: Connection) => void;
+    packet: (packet: TypedClientPacket, connection: Connection) => void;
 
     /**
      * New connection established
-     * @param socket Socket the connection was established on
+     * @param connection Connection that was established
      */
-    connection: (socket: Connection) => void;
+    connection: (connection: Connection) => void;
+
+    /**
+     * Server closed
+     */
+    closed: () => void;
+
+    /**
+     * Connection closed
+     * @param connection Connection that was closed
+     */
+    disconnect: (connection: Connection) => void;
 };
 
 export default class Server extends (EventEmitter as new () => TypedEventEmitter<ServerEvents>) {
@@ -53,6 +64,24 @@ export default class Server extends (EventEmitter as new () => TypedEventEmitter
     public start() {
         this.server.listen(this.config.port, () => this.emit("listening", this.config.port));
         this.server.on("connection", this.onConnection.bind(this));
+    }
+
+    public async stop(): Promise<void> {
+        this.logger.debug("Closing server...");
+        await Promise.all([
+            new Promise((resolve, reject) => {
+                this.server.close((err) => {
+                    if (err) reject(err);
+                    else resolve(void 0);
+                });
+            }),
+            this.connections.disconnect(),
+        ]).then(() => void 0);
+        this.emit("closed");
+    }
+
+    public get isRunning(): boolean {
+        return this.server.listening;
     }
 
     private onConnection(socket: net.Socket) {

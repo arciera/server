@@ -9,6 +9,7 @@ export default class ConnectionPool {
      */
     public add(connection: Connection): void {
         this.connections.push(connection);
+        connection.socket.on("close", () => this.disconnect(connection.id));
     }
 
     /**
@@ -38,6 +39,7 @@ export default class ConnectionPool {
             const index = this.connections.indexOf(connection);
             if (index === -1) return false;
             this.connections.splice(index, 1);
+            connection.server.emit("disconnect", connection);
             promises.push(new Promise(resolve => connection.socket.end(() => resolve(true))));
         }
         else for (const connection of this.connections)
