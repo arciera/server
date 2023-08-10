@@ -30,6 +30,17 @@ server.on("disconnect", (conn) => {
     });
 });
 
+server.on("closed", () => {
+    server.logger.info("Server closed");
+    process.exit(0);
+});
+
+process.on("SIGINT", () => {
+    process.stdout.write("\x1b[2D"); // Move cursor 2 characters left (clears ^C)
+    if (server.isRunning) server.stop().then();
+    else process.exit(0);
+});
+
 server.on("packet.LoginPacket", (packet, conn) => {
     new LoginSuccessPacket(packet.data.uuid, packet.data.username).send(conn);
 });
