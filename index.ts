@@ -8,7 +8,7 @@ server.start();
 server.on("listening", (port) => server.logger.info(`Listening on port ${port}`));
 
 server.on("unknownPacket", (packet, conn) => {
-    server.logger.warn("Unknown packet, disconnecting", packet.data);
+    server.logger.warn("Unknown packet, disconnecting", packet.dataBuffer);
     conn.disconnect().then();
 });
 server.on("packet", (packet, _conn) => {
@@ -17,6 +17,13 @@ server.on("packet", (packet, _conn) => {
 
 server.on("connection", (conn) => {
     server.logger.debug("Connection", {
+        ip: conn.socket.remoteAddress,
+        port: conn.socket.remotePort
+    });
+});
+
+server.on("disconnect", (conn) => {
+    server.logger.debug("Disconnect", {
         ip: conn.socket.remoteAddress,
         port: conn.socket.remotePort
     });
