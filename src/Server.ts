@@ -4,8 +4,8 @@ import path from "node:path";
 import Packet from "./Packet.js";
 import Config from "./Config.js";
 import Logger from "./Logger.js";
-import {TypedClientPacket} from "./TypedPacket";
-import TypedEventEmitter from "./TypedEventEmitter";
+import {TypedClientPacket} from "./types/TypedPacket";
+import TypedEventEmitter from "./types/TypedEventEmitter";
 import ConnectionPool from "./ConnectionPool.js";
 import Connection from "./Connection.js";
 import HandshakePacket from "./packet/client/HandshakePacket";
@@ -91,8 +91,8 @@ export default class Server extends (EventEmitter as new () => TypedEventEmitter
                     else resolve(void 0);
                 });
             }),
-            this.connections.disconnect(),
-        ]).then(() => void 0);
+            this.connections.disconnectAll(this.config.shutdownKickReason),
+        ]);
         this.emit("closed");
     }
 

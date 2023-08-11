@@ -6,7 +6,7 @@ import Packet from "./Packet.js";
 /**
  * A TCP socket connection to the server.
  */
-export default class Connection {
+class Connection {
     /**
      * A unique identifier for this connection.
      */
@@ -19,6 +19,22 @@ export default class Connection {
      * The server to which this connection belongs.
      */
     public readonly server: Server;
+    /**
+     * The state of the connection.
+     */
+    #state: Connection.State = Connection.State.NONE;
+
+    /**
+     * The state of the connection.
+     */
+    public get state(): Connection.State {
+        return this.#state;
+    }
+
+    /** @internal */
+    public _setState(state: Connection.State): void {
+        this.#state = state;
+    }
 
     /**
      * Packet fragment this connection is currently sending to the server.
@@ -37,9 +53,9 @@ export default class Connection {
         if (this.currentPacketFragment.push(data)) {
             const p = this.currentPacketFragment.getTypedClient();
             if (p) {
+                p.execute(this, this.server);
                 this.server.emit("packet", p, this);
                 this.server.emit(`packet.${p.constructor.name}` as any, p, this);
-                p.execute(this, this.server);
             }
             else this.server.emit("unknownPacket", this.currentPacketFragment, this);
             this.currentPacketFragment = new Packet();
@@ -48,9 +64,10 @@ export default class Connection {
 
     /**
      * Disconnect this connection.
+     * @param [reason] The reason for the disconnect.
      */
-    public disconnect(): Promise<boolean> {
-        return this.server.connections.disconnect(this.id);
+    public disconnect(reason?: string): Promise<boolean> {
+        return this.server.connections.disconnect(this.id, reason);
     }
 
     /**
@@ -60,3 +77,38 @@ export default class Connection {
         return !this.socket.destroyed && this.server.connections.get(this.id) !== null;
     }
 }
+
+namespace Connection {
+    /**
+     * Connection state
+     */
+    export enum State {
+        /**
+         * None / unknown
+         */
+        NONE,
+
+        /**
+         * Status state
+         *
+         * Sender is checking server status
+         */
+        STATUS,
+
+        /**
+         * Login state
+         *
+         * Player is connecting to the server
+         */
+        LOGIN,
+
+        /**
+         * Play state
+         *
+         * Player is online and communicating game data
+         */
+        PLAY
+    }
+}
+
+export default Connection;

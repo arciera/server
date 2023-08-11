@@ -1,5 +1,5 @@
 import ParsedPacket from "./ParsedPacket.js";
-import {TypedClientPacket, TypedClientPacketStatic} from "./TypedPacket";
+import {TypedClientPacket, TypedClientPacketStatic} from "./types/TypedPacket";
 import HandshakePacket from "./packet/client/HandshakePacket.js";
 import LoginPacket from "./packet/client/LoginPacket.js";
 
@@ -176,6 +176,22 @@ export default class Packet {
         const buffer = Buffer.alloc(2);
         buffer.writeUInt16BE(value);
         return buffer;
+    }
+
+    /**
+     * Parse chat
+     * @param buffer
+     */
+    public static parseChat(buffer: Buffer): ChatComponent {
+        return JSON.parse(Packet.parseString(buffer)) as ChatComponent;
+    }
+
+    /**
+     * Write chat
+     * @param value
+     */
+    public static writeChat(value: ChatComponent): Buffer {
+        return Packet.writeString(JSON.stringify(value));
     }
 
     /**

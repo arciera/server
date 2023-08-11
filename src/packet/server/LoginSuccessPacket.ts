@@ -1,4 +1,5 @@
 import ServerPacket from "../../ServerPacket.js";
+import Connection from "../../Connection.js";
 
 /**
  * A Minecraft protocol client-bound LoginSuccess packet.
@@ -13,5 +14,10 @@ export default class LoginSuccessPacket extends ServerPacket {
             ServerPacket.writeString(username),
             ServerPacket.writeVarInt(0)
         ]));
+    }
+
+    public override send(connection: Connection) {
+        connection._setState(Connection.State.PLAY);
+        return super.send(connection);
     }
 }
