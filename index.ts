@@ -1,8 +1,8 @@
-import Config from "./src/Config.js";
+import { Config, ConfigLoader } from "./src/Config.js";
 import Server from "./src/Server.js";
 import LoginSuccessPacket from "./src/packet/server/LoginSuccessPacket.js";
 
-const config: Config = await Config.fromFile("config.json");
+const config: Config = await ConfigLoader.fromFile("config.json");
 
 const server = new Server(config);
 server.start();

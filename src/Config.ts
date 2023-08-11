@@ -1,14 +1,19 @@
 import { open } from "node:fs/promises";
 import Logger from "./Logger.js";
 
-export default class Config {
-    public port: number = 25565;
+export interface Config {
+    /**
+     * Port to listen on
+     */
+    port: number;
 
     /**
      * Kick reason for when the server is shutting down
      */
-    public shutdownKickReason: string = "Server closed";
+    shutdownKickReason: string;
+}
 
+export class ConfigLoader {
     /**
      * Get a Config instance from a json file
      * @param file The file to read from
@@ -22,9 +27,20 @@ export default class Config {
             fd.close();
             return config;
         } catch {
-            new Logger("Config").error("Failed to read config file, using default config");
-            return new Config();
+            new Logger("Config").error("Failed to read config file, using the default config");
+            return ConfigLoader.getDefault();
         }
     }
 
+    /**
+     * Get a default config instance
+     * @returns a default config instance
+    **/
+    public static getDefault(): Config {
+        return {
+            port: 25565,
+            shutdownKickReason: "Server shutting down"
+        };
+    }
 }
+
