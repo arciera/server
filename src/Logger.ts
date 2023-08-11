@@ -78,7 +78,7 @@ class Logger {
      * @returns true if the log level should be logged
      */
     public shouldLog(level: Logger.Level): boolean {
-        return Logger.LevelHierarchy[level!]! >= Logger.LevelHierarchy[this.logLevel!]!;
+        return Logger.LevelHierarchy.indexOf(level)! >= Logger.LevelHierarchy.indexOf(this.logLevel!)!;
     }
     
 
@@ -160,13 +160,13 @@ class Logger {
     /**
      * Level hierarchy
      */
-    public static readonly LevelHierarchy: Record<string, number> = Object.freeze({
-        DEBUG: 0,
-        INFO: 1,
-        SUCCESS: 2,
-        WARN: 3,
-        ERROR: 4,
-    });
+    public static readonly LevelHierarchy: readonly string[] = Object.freeze([
+        "DEBUG",
+        "INFO",
+        "SUCCESS",
+        "WARN",
+        "ERROR"
+    ]);
 
     /**
      * 256 colors
