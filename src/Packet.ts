@@ -195,6 +195,24 @@ export default class Packet {
     }
 
     /**
+     * Parse int
+     * @param buffer
+     */
+    public static parseInt(buffer: Buffer): number {
+        return buffer.readInt32BE(0);
+    }
+
+    /**
+     * Write int
+     * @param value
+     */
+    public static writeInt(value: number): Buffer {
+        const buffer = Buffer.alloc(4);
+        buffer.writeInt32BE(value);
+        return buffer;
+    }
+
+    /**
      * Get typed client packet
      */
     public getTypedClient(): TypedClientPacket | null {
