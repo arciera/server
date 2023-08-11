@@ -1,5 +1,5 @@
 import ParsedPacket from "./ParsedPacket.js";
-import {TypedClientPacket, TypedClientPacketStatic} from "./TypedPacket";
+import {TypedClientPacket, TypedClientPacketStatic} from "./types/TypedPacket";
 import HandshakePacket from "./packet/client/HandshakePacket.js";
 import LoginPacket from "./packet/client/LoginPacket.js";
 

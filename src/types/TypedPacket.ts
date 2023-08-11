@@ -1,6 +1,6 @@
-import Server from "./Server";
-import ParsedPacket from "./ParsedPacket";
-import Connection from "./Connection";
+import Server from "../Server";
+import ParsedPacket from "../ParsedPacket";
+import Connection from "../Connection";
 
 export interface TypedClientPacket {
     readonly packet: ParsedPacket;

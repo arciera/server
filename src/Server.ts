@@ -4,7 +4,7 @@ import path from "node:path";
 import Packet from "./Packet.js";
 import Config from "./Config.js";
 import Logger from "./Logger.js";
-import {TypedClientPacket} from "./TypedPacket";
+import {TypedClientPacket} from "./types/TypedPacket";
 import TypedEventEmitter from "./TypedEventEmitter";
 import ConnectionPool from "./ConnectionPool.js";
 import Connection from "./Connection.js";

@@ -1,4 +1,4 @@
-import {TypedClientPacket, TypedClientPacketStatic} from "../../TypedPacket";
+import {TypedClientPacket, TypedClientPacketStatic} from "../../types/TypedPacket";
 import StaticImplements from "../../decorator/StaticImplements.js";
 import Server from "../../Server";
 import ParsedPacket from "../../ParsedPacket";
