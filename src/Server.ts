@@ -5,7 +5,7 @@ import Packet from "./Packet.js";
 import Config from "./Config.js";
 import Logger from "./Logger.js";
 import {TypedClientPacket} from "./types/TypedPacket";
-import TypedEventEmitter from "./TypedEventEmitter";
+import TypedEventEmitter from "./types/TypedEventEmitter";
 import ConnectionPool from "./ConnectionPool.js";
 import Connection from "./Connection.js";
 import HandshakePacket from "./packet/client/HandshakePacket";
