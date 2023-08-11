@@ -6,6 +6,11 @@ export default class Config {
     public logLevel: Logger.Level = Logger.Level.INFO;
 
     /**
+     * Kick reason for when the server is shutting down
+     */
+    public shutdownKickReason: string = "Server closed";
+
+    /**
      * Get a Config instance from a json file
      * @param file The file to read from
      * @returns a promise that resolves to a Config instance

@@ -11,7 +11,12 @@ export default abstract class ServerPacket extends Packet {
      * Send packet to a connection
      * @param connection
      */
-    public send(connection: Connection): void {
-        connection.socket.write(this.dataBuffer);
+    public send(connection: Connection): Promise<void> {
+        return new Promise((resolve, reject) => {
+            connection.socket.write(this.dataBuffer, (err) => {
+                if (err) reject(err);
+                else resolve();
+            });
+        });
     }
 }

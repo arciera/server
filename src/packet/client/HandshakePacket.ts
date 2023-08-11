@@ -1,8 +1,8 @@
-import {TypedClientPacket, TypedClientPacketStatic} from "../../TypedPacket";
+import {TypedClientPacket, TypedClientPacketStatic} from "../../types/TypedPacket";
 import StaticImplements from "../../decorator/StaticImplements.js";
 import Server from "../../Server";
 import ParsedPacket from "../../ParsedPacket";
-import Connection from "../../Connection";
+import Connection from "../../Connection.js";
 
 @StaticImplements<TypedClientPacketStatic>()
 export default class HandshakePacket {
@@ -25,7 +25,9 @@ export default class HandshakePacket {
         } as const;
     }
 
-    execute(_conn: Connection, _server: Server): void {}
+    execute(conn: Connection, _server: Server): void {
+        conn._setState(Connection.State.LOGIN);
+    }
 
     public static readonly id = 0x00;
 

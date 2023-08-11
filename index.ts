@@ -42,5 +42,5 @@ process.on("SIGINT", () => {
 });
 
 server.on("packet.LoginPacket", (packet, conn) => {
-    new LoginSuccessPacket(packet.data.uuid, packet.data.username).send(conn);
+    new LoginSuccessPacket(packet.data.uuid, packet.data.username).send(conn).then();
 });

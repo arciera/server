@@ -1,8 +1,8 @@
-import {TypedClientPacket, TypedClientPacketStatic} from "../../TypedPacket";
+import {TypedClientPacket, TypedClientPacketStatic} from "../../types/TypedPacket";
 import StaticImplements from "../../decorator/StaticImplements.js";
 import ParsedPacket from "../../ParsedPacket.js";
 import Server from "../../Server";
-import Connection from "../../Connection";
+import Connection from "../../Connection.js";
 
 @StaticImplements<TypedClientPacketStatic>()
 export default class LoginPacket {
@@ -24,7 +24,9 @@ export default class LoginPacket {
         }
     }
 
-    execute(_conn: Connection, _server: Server): void {}
+    execute(conn: Connection, _server: Server): void {
+        conn._setState(Connection.State.LOGIN);
+    }
 
     public static readonly id = 0x00;
 
