@@ -1,9 +1,6 @@
 import ServerPacket from "../../ServerPacket.js";
 import {Gamemode} from "../../Gamemode";
 
-/**
- * A Minecraft protocol client-bound LoginSuccess packet.
- */
 export default class LoginPlayPacket extends ServerPacket {
     public static readonly id = 0x28;
 
@@ -60,8 +57,8 @@ export default class LoginPlayPacket extends ServerPacket {
         const deathPositionBuffer = Buffer.alloc(8);
         if (deathLocation) {
             deathPositionBuffer.writeInt32BE(deathLocation[0], 0)
-            deathPositionBuffer.writeInt16BE(deathLocation[1], 4);
-            deathPositionBuffer.writeInt32BE(deathLocation[2], 6);
+            deathPositionBuffer.writeInt32BE(deathLocation[2], 2);
+            deathPositionBuffer.writeInt16BE(deathLocation[1], 6);
         }
         super(Buffer.concat([
             ServerPacket.writeVarInt(LoginPlayPacket.id),
