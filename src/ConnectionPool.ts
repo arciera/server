@@ -1,4 +1,6 @@
-import Connection from "./Connection";
+import Connection from "./Connection.js";
+import DisconnectLoginPacket from "./packet/server/DisconnectLoginPacket.js";
+import DisconnectPlayPacket from "./packet/server/DisconnectPlayPacket.js";
 
 export default class ConnectionPool {
     private readonly connections: Connection[] = [];
@@ -22,28 +24,42 @@ export default class ConnectionPool {
 
     /**
      * Disconnect all connections
+     * @param [reason] The reason for the disconnect
      * @returns Whether all connections disconnected successfully
      */
-    public async disconnect(): Promise<boolean>;
+    public async disconnectAll (reason?: string): Promise<boolean> {
+        const promises: Promise<boolean>[] = [];
+        for (const connection of this.connections)
+            promises.push(this.disconnect(connection.id, reason));
+        return (await Promise.all(promises)).every(result => result);
+    }
+
     /**
      * Disconnect a connection
      * @param id The ID of the connection to disconnect
+     * @param [reason] The reason for the disconnect
      * @returns Whether the connection was found and disconnected
      */
-    public async disconnect(id: string): Promise<boolean>;
-    public async disconnect(id?: string): Promise<boolean> {
-        const promises: Promise<boolean>[] = [];
-        if (id) {
-            const connection = this.get(id);
-            if (!connection) return false;
-            const index = this.connections.indexOf(connection);
-            if (index === -1) return false;
-            this.connections.splice(index, 1);
-            connection.server.emit("disconnect", connection);
-            promises.push(new Promise(resolve => connection.socket.end(() => resolve(true))));
+    public async disconnect(id: string, reason?: string): Promise<boolean> {
+        const connection = this.get(id);
+        if (!connection) return false;
+        const index = this.connections.indexOf(connection);
+        if (index === -1) return false;
+        if (reason) switch (connection.state) {
+            case Connection.State.LOGIN: {
+                await new DisconnectLoginPacket({text: reason}).send(connection);
+                break;
+            }
+            case Connection.State.PLAY: {
+                await new DisconnectPlayPacket({text: reason}).send(connection);
+                break;
+            }
+            default: {
+                connection.server.logger.warn("Cannot set disconnect reason for state " + Connection.State[connection.state] + " on connection " + connection.id);
+            }
         }
-        else for (const connection of this.connections)
-                promises.push(this.disconnect(connection.id));
-        return (await Promise.all(promises)).every(result => result);
+        this.connections.splice(index, 1);
+        connection.server.emit("disconnect", connection);
+        return new Promise(resolve => connection.socket.end(() => resolve(true)));
     }
 }

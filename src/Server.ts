@@ -91,7 +91,7 @@ export default class Server extends (EventEmitter as new () => TypedEventEmitter
                     else resolve(void 0);
                 });
             }),
-            this.connections.disconnect(),
+            this.connections.disconnectAll(this.config.shutdownKickReason),
         ]).then(() => void 0);
         this.emit("closed");
     }

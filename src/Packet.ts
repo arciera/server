@@ -179,6 +179,22 @@ export default class Packet {
     }
 
     /**
+     * Parse chat
+     * @param buffer
+     */
+    public static parseChat(buffer: Buffer): ChatComponent {
+        return JSON.parse(Packet.parseString(buffer)) as ChatComponent;
+    }
+
+    /**
+     * Write chat
+     * @param value
+     */
+    public static writeChat(value: ChatComponent): Buffer {
+        return Packet.writeString(JSON.stringify(value));
+    }
+
+    /**
      * Get typed client packet
      */
     public getTypedClient(): TypedClientPacket | null {
