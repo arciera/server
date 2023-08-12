@@ -78,7 +78,7 @@ class Logger {
      * @returns true if the log level should be logged
      */
     public shouldLog(level: Logger.Level): boolean {
-        return Logger.LevelHierarchy.indexOf(level)! >= Logger.LevelHierarchy.indexOf(this.logLevel!)!;
+        return Logger.LevelHierarchy.indexOf(level) >= Logger.LevelHierarchy.indexOf(this.logLevel);
     }
     
 
