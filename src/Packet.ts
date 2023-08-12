@@ -2,6 +2,7 @@ import ParsedPacket from "./ParsedPacket.js";
 import {TypedClientPacket, TypedClientPacketStatic} from "./types/TypedPacket";
 import HandshakePacket from "./packet/client/HandshakePacket.js";
 import LoginPacket from "./packet/client/LoginPacket.js";
+import Connection from "./Connection";
 
 export default class Packet {
     readonly #data: number[];
@@ -215,9 +216,9 @@ export default class Packet {
     /**
      * Get typed client packet
      */
-    public getTypedClient(): TypedClientPacket | null {
+    public getTypedClient(conn: Connection): TypedClientPacket | null {
         for (const type of Packet.clientTypes) {
-            const p = type.isThisPacket(this.parse());
+            const p = type.isThisPacket(this.parse(), conn);
             if (p !== null) return p;
         }
         return null;
