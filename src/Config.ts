@@ -56,8 +56,7 @@ export class ConfigLoader {
      */
     public static async exists(file: string): Promise<boolean> {
         try {
-            await stat(file);
-            access(file, constants.R_OK).catch(() => void 0);
+            await access(file, constants.F_OK);
             return true;
         } catch {
             return false;
