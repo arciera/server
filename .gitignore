@@ -133,3 +133,6 @@ dist
 *.js
 *.d.ts
 .idea
+
+# documentation
+docs/

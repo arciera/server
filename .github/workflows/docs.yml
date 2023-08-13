@@ -1,0 +1,37 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  package-and-upload:
+    name: Build and upload
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Generate docs with typedoc
+        run: npm run docs
+
+      - name: Sync to Github Wiki
+        uses: joeizzard/action-wiki-sync@master
+
+        with:
+          username: ${{ secrets.GITHUB_ACTOR }}
+          access_token: ${{ secrets.GITHUB_TOKEN }}
+          wiki_folder: docs
+          commit_user_name: ${{ secrets.GITHUB_ACTOR }}
+          commit_user_email: ${{ secrets.GITHUB_ACTOR }}@users.noreply.github.com
+          commit_message: "Synced wiki from main branch"

@@ -1,0 +1,13 @@
+{
+    "$schema": "https://typedoc.org/schema.json",
+    "entryPoints": [
+        "./**/*.ts"
+    ],
+    "plugin": [
+        "typedoc-plugin-markdown",
+        "typedoc-github-wiki-theme"
+    ],
+    "out": "./docs",
+    "name": "arciera/server",
+    "theme": "github-wiki",
+}   
