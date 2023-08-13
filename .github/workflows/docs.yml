@@ -21,3 +21,4 @@ jobs:
           message: "chore: update documentation"
           auth_token: ${{ secrets.GITHUB_TOKEN }}
           repo: ${{ github.repository }}
+          from: ${{ github.ref }}
