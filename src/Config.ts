@@ -45,7 +45,7 @@ export class ConfigLoader {
     public static getDefault(): Config {
         return {
             port: 25565,
-            shutdownKickReason: "Server shutting down"
+            shutdownKickReason: "Server closed"
         };
     }
 
