@@ -1,4 +1,4 @@
-import { open, stat, access, constants } from "node:fs/promises";
+import { open, access, constants } from "node:fs/promises";
 import Logger from "./Logger.js";
 
 export interface Config {
