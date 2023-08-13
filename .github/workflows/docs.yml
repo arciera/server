@@ -1,4 +1,4 @@
-name: Release
+name: Generate docs
 
 on:
   push:
@@ -8,24 +8,10 @@ on:
 
 jobs:
   generate-docs:
-    name: Build and upload
+    name: Generate docs
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: Set up Node 18
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18.x
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Generate docs with typedoc
-        run: npm run docs
-
       - name: Sync to Github Wiki
         uses: arciera/github-wiki-sync@main
 
