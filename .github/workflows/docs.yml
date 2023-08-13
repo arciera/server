@@ -19,3 +19,4 @@ jobs:
           build_script: docs
           docs_folder: docs
           message: "chore: update documentation"
+          auth_token: ${{ secrets.GITHUB_TOKEN }}
