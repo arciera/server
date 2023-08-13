@@ -20,6 +20,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
+ * @see https://github.com/andywer/typed-emitter
  */
 export default interface TypedEventEmitter<Events extends EventMap> {
     addListener<E extends keyof Events> (event: E, listener: Events[E]): this
