@@ -20,3 +20,4 @@ jobs:
           docs_folder: docs
           message: "chore: update documentation"
           auth_token: ${{ secrets.GITHUB_TOKEN }}
+          repo: ${{ github.repository }}
