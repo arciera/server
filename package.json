@@ -8,7 +8,7 @@
     "build": "tsc",
     "build:start": "npm run build && npm run start",
     "bundle": "ncc build ./index.ts -o build -m",
-    "docs": "typedoc --out docs ./index.ts",
+    "docs": "typedoc",
     "start": "node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
