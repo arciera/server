@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Sync to Github Wiki
+      - name: Sync the Github Wiki
         uses: arciera/github-wiki-sync@main
 
         with:
