@@ -33,6 +33,6 @@ jobs:
           username: ${{ secrets.GITHUB_ACTOR }}
           access_token: ${{ secrets.GITHUB_TOKEN }}
           wiki_folder: docs
-          commit_user_name: ${{ secrets.GITHUB_ACTOR }}
-          commit_user_email: ${{ secrets.GITHUB_ACTOR }}@users.noreply.github.com
+          commit_username: ${{ secrets.GITHUB_ACTOR }}
+          commit_email: ${{ secrets.GITHUB_ACTOR }}@users.noreply.github.com
           commit_message: "Synced wiki from main branch"
