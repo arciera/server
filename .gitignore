@@ -133,3 +133,5 @@ dist
 *.js
 *.d.ts
 .idea
+
+!src/types/*.d.ts
