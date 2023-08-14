@@ -1,8 +1,10 @@
 class Logger {
     private readonly name: string;
+    private readonly logLevel: Logger.Level;
 
-    public constructor(name: string) {
+    public constructor(name: string, logLevel: Logger.Level) {
         this.name = name;
+        this.logLevel = logLevel;
     }
 
     /**
@@ -37,7 +39,9 @@ class Logger {
      * @param [obj] Objects to print
      */
     public log(level: Logger.Level, message: string, ...obj: any[]): void {
-        this[level === Logger.Level.ERROR ? "stderr" : "stdout"](this.format(level, message), ...obj);
+        if (this.shouldLog(level)) {
+            this[level === Logger.Level.ERROR ? "stderr" : "stdout"](this.format(level, message), ...obj);
+        }
     }
 
     /**
@@ -75,6 +79,16 @@ class Logger {
     public success(message: string, ...obj: any[]): void {
         this.log(Logger.Level.SUCCESS, message, ...obj);
     }
+
+    /**
+     * Check if a log level should be logged
+     * @param level Log level
+     * @returns true if the log level should be logged
+     */
+    public shouldLog(level: Logger.Level): boolean {
+        return Logger.LevelHierarchy.indexOf(level) >= Logger.LevelHierarchy.indexOf(this.logLevel);
+    }
+    
 
     /**
      * Log debug message
@@ -144,12 +158,23 @@ class Logger {
      * Level formatting
      */
     public static readonly level: Record<string, string> = Object.freeze({
+        "DEBUG": Logger.ansi.text.bright.magenta,
         "INFO": Logger.ansi.text.bright.blue,
+        "SUCCESS": Logger.ansi.text.bright.green,
         "WARN": Logger.ansi.text.bright.yellow,
         "ERROR": Logger.ansi.text.bright.red,
-        "SUCCESS": Logger.ansi.text.bright.green,
-        "DEBUG": Logger.ansi.text.bright.magenta
     });
+
+    /**
+     * Level hierarchy
+     */
+    public static readonly LevelHierarchy: readonly string[] = Object.freeze([
+        "DEBUG",
+        "INFO",
+        "SUCCESS",
+        "WARN",
+        "ERROR"
+    ]);
 
     /**
      * 256 colors
