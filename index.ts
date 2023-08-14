@@ -1,6 +1,7 @@
 import Config from "./src/Config.js";
 import Server from "./src/Server.js";
 import LoginSuccessPacket from "./src/packet/server/LoginSuccessPacket.js";
+import Connection from "./src/Connection.js";
 import LoginPlayPacket from "./src/packet/server/LoginPlayPacket.js";
 import fs from "node:fs/promises";
 import Packet from "./src/Packet.js";
@@ -12,10 +13,10 @@ const server = new Server(config);
 server.start();
 server.on("listening", (port) => server.logger.info(`Listening on port ${port}`));
 
-server.on("unknownPacket", (packet, _conn) => {
-    server.logger.warn("Unknown packet, disconnecting", packet.dataBuffer);
-    //conn.disconnect().then();
+server.on("unknownPacket", (packet, conn) => {
+    server.logger.debug("Unknown packet", `{state=${Connection.State[conn.state]}}`, packet.dataBuffer);
 });
+
 server.on("packet", (packet, _conn) => {
     server.logger.debug(packet.constructor.name, packet.data);
 });
