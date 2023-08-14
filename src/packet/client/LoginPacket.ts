@@ -30,9 +30,10 @@ export default class LoginPacket {
 
     public static readonly id = 0x00;
 
-    public static isThisPacket(data: ParsedPacket): TypedClientPacket | null {
-        const p = new this(data);
+    public static isThisPacket(data: ParsedPacket, conn: Connection): TypedClientPacket | null {
+        if (conn.state !== Connection.State.LOGIN) return null;
         try {
+            const p = new this(data);
             return (p.packet.id === this.id && p.data.username !== null && p.data.username.match(/^[.*]?[A-Za-z0-9_]{3,16}$/) !== null) ? p : null;
         }
         catch {

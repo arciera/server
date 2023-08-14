@@ -13,5 +13,5 @@ export interface TypedClientPacketStatic {
 
     readonly id: number;
 
-    isThisPacket(data: ParsedPacket): TypedClientPacket | null;
+    isThisPacket(data: ParsedPacket, conn: Connection): TypedClientPacket | null;
 }
