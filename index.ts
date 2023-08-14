@@ -42,5 +42,5 @@ process.on("SIGINT", () => {
 });
 
 server.on("packet.LoginPacket", (packet, conn) => {
-    new LoginSuccessPacket(packet.data.uuid, packet.data.username).send(conn).then();
+    new LoginSuccessPacket(packet.data.uuid ?? Buffer.from("OfflinePlayer:" + packet.data.username, "utf-8").toString("hex").slice(0, 32), packet.data.username).send(conn).then();
 });
