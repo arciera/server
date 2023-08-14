@@ -109,5 +109,9 @@ export default class Server extends (EventEmitter as new () => TypedEventEmitter
             for (const byte of data)
                 conn.incomingPacketFragment(byte);
         });
+        socket.on("error", (err) => {
+            this.logger.error("Connection error:", err.message);
+            conn.disconnect().then();
+        });
     }
 }

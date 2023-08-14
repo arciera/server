@@ -1,7 +1,7 @@
 import Config from "./src/Config.js";
 import Server from "./src/Server.js";
 import LoginSuccessPacket from "./src/packet/server/LoginSuccessPacket.js";
-import Connection from "./src/Connection.js";
+// import Connection from "./src/Connection.js";
 import LoginPlayPacket from "./src/packet/server/LoginPlayPacket.js";
 import fs from "node:fs/promises";
 import Packet from "./src/Packet.js";
@@ -13,9 +13,9 @@ const server = new Server(config);
 server.start();
 server.on("listening", (port) => server.logger.info(`Listening on port ${port}`));
 
-server.on("unknownPacket", (packet, conn) => {
-    server.logger.debug("Unknown packet", `{state=${Connection.State[conn.state]}}`, packet.dataBuffer);
-});
+// server.on("unknownPacket", (packet, conn) => {
+//     server.logger.debug("Unknown packet", `{state=${Connection.State[conn.state]}}`, packet.dataBuffer);
+// });
 
 server.on("packet", (packet, _conn) => {
     server.logger.debug(packet.constructor.name, packet.data);
@@ -55,3 +55,9 @@ server.on("packet.LoginPacket", async (packet, conn) => {
     conn.socket.write(Buffer.concat([Packet.writeVarInt(chunk.byteLength), chunk]));
     setInterval(() => conn.socket.write(Buffer.from([9, 0x23, 0, 0, 0, 0, 0, 0, 0, 0])), 2000);
 });
+setInterval(() => {
+    // @ts-ignore
+    server.logger.success("LIVE CONNECTIONS", server.connections.connections.length);
+    server.logger.success("PID:", process.pid);
+    server.logger.success("MEM:", (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2), "MB");
+}, 1000);
