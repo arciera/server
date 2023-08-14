@@ -47,7 +47,7 @@ process.on("SIGINT", () => {
 });
 
 server.on("packet.LoginPacket", async (packet, conn) => {
-    await new LoginSuccessPacket(packet.data.uuid, packet.data.username).send(conn);
+    new LoginSuccessPacket(packet.data.uuid ?? Buffer.from("OfflinePlayer:" + packet.data.username, "utf-8").toString("hex").slice(0, 32), packet.data.username).send(conn);
     const registry = Buffer.from((await fs.readFile("registryCodecNBT", "utf-8")).replaceAll(" ", ""), "hex");
     await new LoginPlayPacket(0, false, 3, -1, ["minecraft:the_end"], registry, "minecraft:the_end", "end", BigInt(0), 0, 2, 2, false, false, true, true, 0, false).send(conn);
     await new SetDefaultSpawnPosition(0, 0, 0, 0).send(conn);
