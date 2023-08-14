@@ -8,11 +8,19 @@ class Logger {
     }
 
     /**
-     * Print object without any log level
+     * Print object without any log level to STDOUT
      * @param obj Object to print
      */
-    private send(...obj: any[]): void {
+    private stdout(...obj: any[]): void {
         console.log(...obj);
+    }
+
+    /**
+     * Print object without any log level to STDERR
+     * @param obj Object to print
+     */
+    private stderr(...obj: any[]): void {
+        console.error(...obj);
     }
 
     /**
@@ -32,7 +40,7 @@ class Logger {
      */
     public log(level: Logger.Level, message: string, ...obj: any[]): void {
         if (this.shouldLog(level)) {
-            this.send(this.format(level, message), ...obj);
+            this[level === Logger.Level.ERROR ? "stderr" : "stdout"](this.format(level, message), ...obj);
         }
     }
 
