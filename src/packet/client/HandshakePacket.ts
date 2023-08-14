@@ -31,9 +31,10 @@ export default class HandshakePacket {
 
     public static readonly id = 0x00;
 
-    public static isThisPacket(data: ParsedPacket): TypedClientPacket | null {
-        const p = new this(data);
+    public static isThisPacket(data: ParsedPacket, conn: Connection): TypedClientPacket | null {
+        if (conn.state !== Connection.State.NONE) return null;
         try {
+            const p = new this(data);
             return (p.packet.id === this.id && p.data.nextState === 2) ? p : null;
         }
         catch {

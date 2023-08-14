@@ -51,7 +51,7 @@ class Connection {
     /** @internal */
     public incomingPacketFragment(data: number) {
         if (this.currentPacketFragment.push(data)) {
-            const p = this.currentPacketFragment.getTypedClient();
+            const p = this.currentPacketFragment.getTypedClient(this);
             if (p) {
                 p.execute(this, this.server);
                 this.server.emit("packet", p, this);
