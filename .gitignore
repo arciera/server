@@ -134,4 +134,7 @@ dist
 *.d.ts
 .idea
 
+
+# default config file
+config.json
 !src/types/*.d.ts
