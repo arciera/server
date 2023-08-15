@@ -24,6 +24,7 @@ export class ConfigLoader {
      * Get a Config instance from a json file
      * @param file The file to read from
      * @returns a promise that resolves to a Config instance
+     * @throws if the file does not exist or is invalid
      */
     public static async fromFile(file: string): Promise<Config> {
         let config: Config = ConfigLoader.getDefault();
@@ -33,25 +34,11 @@ export class ConfigLoader {
             await ConfigLoader.createDefault(file);
             return config;
         }
-        let data: string;
+        const fd: FileHandle = await open(file, "r");
+        const data: string = await fd.readFile("utf-8");
+        fd.close();
 
-        try {
-            const fd: FileHandle = await open(file, "r");
-            data = await fd.readFile("utf-8");
-            fd.close();
-
-        } catch (e) {
-            logger.error("Failed to read config '%s': %s", file, e);
-            process.exit(1);
-        }
-
-        try {
-            config = JSON.parse(data) as Config;
-        }
-        catch (e) {
-            logger.error("Failed to parse config '%s': %s", file, e);
-            process.exit(1); 
-        }
+        config = JSON.parse(data) as Config;
 
         return config;
     }

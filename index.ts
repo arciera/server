@@ -3,7 +3,8 @@ import Server from "./src/Server.js";
 import LoginSuccessPacket from "./src/packet/server/LoginSuccessPacket.js";
 import Connection from "./src/Connection.js";
 
-const config: Config = await ConfigLoader.fromFile("config.json");
+let config: Config = await ConfigLoader.fromFile("config.json");
+
 
 const server = new Server(config);
 server.start();
