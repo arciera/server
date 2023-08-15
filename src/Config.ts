@@ -28,20 +28,17 @@ export class ConfigLoader {
      * @throws {SyntaxError} failed to parse config
      */
     public static async fromFile(file: string): Promise<Config> {
-        let config: Config = ConfigLoader.getDefault();
-        let logger: Logger = new Logger("Config", config.logLevel);
         if (!(await ConfigLoader.exists(file))) {
-            logger.warn("Config does not exist, creating default '%s'", file);
             await ConfigLoader.createDefault(file);
+            const config = ConfigLoader.getDefault();
+            new Logger("Config", config.logLevel).warn("Config does not exist, creating default '%s'", file);
             return config;
         }
         const fd: FileHandle = await open(file, "r");
         const data: string = await fd.readFile("utf-8");
         fd.close();
 
-        config = JSON.parse(data) as Config;
-
-        return config;
+        return JSON.parse(data) as Config;
     }
 
     /**
