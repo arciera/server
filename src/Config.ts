@@ -32,8 +32,8 @@ export class ConfigLoader {
             const config = JSON.parse(data) as Config;
             fd.close();
             return config;
-        } catch {
-            new Logger("Config").error("Failed to read '%s', check your file permissions.", file);
+        } catch (e) {
+            new Logger("Config").error("Failed to read config '%s': %s", file, e);
             process.exit(1); //TODO: better exit handling
         }
     }
