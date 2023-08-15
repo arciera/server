@@ -24,7 +24,8 @@ export class ConfigLoader {
      * Get a Config instance from a json file
      * @param file The file to read from
      * @returns a promise that resolves to a Config instance
-     * @throws if the file does not exist or is invalid
+     * @throws {Error & {CODE: "EACCESS"}} failed to read config
+     * @throws {SyntaxError} failed to parse config
      */
     public static async fromFile(file: string): Promise<Config> {
         let config: Config = ConfigLoader.getDefault();
