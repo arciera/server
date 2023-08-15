@@ -1,16 +1,22 @@
 import { open, access, constants } from "node:fs/promises";
 import Logger from "./Logger.js";
 
-export interface Config {
+
+export default class Config {
     /**
-     * Port to listen on
+     * Port to listen on 
+    */
+    public port: number = 25565;
+
+    /**
+     * The level to display logs at
      */
-    port: number;
+    public logLevel: Logger.Level = Logger.Level.INFO;
 
     /**
      * Kick reason for when the server is shutting down
      */
-    shutdownKickReason: string;
+    public shutdownKickReason: string = "Server closed";
 }
 
 export class ConfigLoader {
@@ -20,22 +26,25 @@ export class ConfigLoader {
      * @returns a promise that resolves to a Config instance
      */
     public static async fromFile(file: string): Promise<Config> {
+        let config: Config = ConfigLoader.getDefault();
+
         if (!(await ConfigLoader.exists(file))) {
-            new Logger("Config").warn("Config does not exist, creating default '%s'", file);
+            new Logger("Config", config.logLevel).warn("Config does not exist, creating default '%s'", file);
             await ConfigLoader.createDefault(file);
-            return ConfigLoader.getDefault();
+            return config;
         }
 
         try {
             const fd = await open(file, "r");
             const data = await fd.readFile("utf-8");
-            const config = JSON.parse(data) as Config;
+            config = JSON.parse(data) as Config;
             fd.close();
             return config;
         } catch (e) {
-            new Logger("Config").error("Failed to read config '%s': %s", file, e);
+            new Logger("Config", config.logLevel).error("Failed to read config '%s': %s", file, e);
             process.exit(1); //TODO: better exit handling
         }
+        return config;
     }
 
     /**
@@ -43,10 +52,7 @@ export class ConfigLoader {
      * @returns a default config instance
      */
     public static getDefault(): Config {
-        return {
-            port: 25565,
-            shutdownKickReason: "Server closed"
-        };
+        return new Config();
     }
 
     /**

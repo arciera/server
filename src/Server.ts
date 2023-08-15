@@ -66,7 +66,7 @@ type ServerEvents = {
 
 export default class Server extends (EventEmitter as new () => TypedEventEmitter<ServerEvents>) {
     private readonly server = net.createServer();
-    public readonly logger = new Logger("Server");
+    public readonly logger: Logger;
     public readonly connections: ConnectionPool = new ConnectionPool();
 
     public static readonly path: string = path.dirname(path.join(new URL(import.meta.url).pathname, ".."));
@@ -75,6 +75,7 @@ export default class Server extends (EventEmitter as new () => TypedEventEmitter
     public constructor(config: Config) {
         super();
         this.config = Object.freeze(config);
+        this.logger = new Logger("Server", this.config.logLevel);
     }
 
     public start() {
