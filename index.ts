@@ -3,10 +3,9 @@ import Server from "./src/Server.js";
 import LoginSuccessPacket from "./src/packet/server/LoginSuccessPacket.js";
 import Connection from "./src/Connection.js";
 
-let config: Config = await ConfigLoader.fromFile("config.json");
-
-
+const config: Config = await ConfigLoader.fromFile("config.json");
 const server = new Server(config);
+
 server.start();
 server.on("listening", (port) => server.logger.info(`Listening on port ${port}`));
 
