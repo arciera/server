@@ -2,21 +2,21 @@ import { open, access, constants } from "node:fs/promises";
 import Logger from "./Logger.js";
 
 
-export default class Config {
+export interface Config {
     /**
      * Port to listen on 
     */
-    public port: number = 25565;
+    port: number;
 
     /**
      * The level to display logs at
      */
-    public logLevel: Logger.Level = Logger.Level.INFO;
+    logLevel: Logger.Level;
 
     /**
      * Kick reason for when the server is shutting down
      */
-    public shutdownKickReason: string = "Server closed";
+    shutdownKickReason: string;
 }
 
 export class ConfigLoader {
@@ -52,7 +52,12 @@ export class ConfigLoader {
      * @returns a default config instance
      */
     public static getDefault(): Config {
-        return new Config();
+        return  {
+            port: 25565,
+            logLevel: Logger.Level.INFO,
+            shutdownKickReason: "Server closed"
+        };
+
     }
 
     /**
