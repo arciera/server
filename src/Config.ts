@@ -41,7 +41,7 @@ export class ConfigLoader {
     /**
      * Get a default config instance
      * @returns a default config instance
-    **/
+     */
     public static getDefault(): Config {
         return {
             port: 25565,
