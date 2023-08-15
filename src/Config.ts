@@ -1,4 +1,4 @@
-import { open, access, constants } from "node:fs/promises";
+import { open, access, constants, FileHandle } from "node:fs/promises";
 import Logger from "./Logger.js";
 
 
@@ -16,7 +16,7 @@ export interface Config {
     /**
      * Kick reason for when the server is shutting down
      */
-    shutdownKickReason: string;
+    shutdownKickReason: ChatComponent;
 }
 
 export class ConfigLoader {
@@ -27,23 +27,32 @@ export class ConfigLoader {
      */
     public static async fromFile(file: string): Promise<Config> {
         let config: Config = ConfigLoader.getDefault();
-
+        let logger: Logger = new Logger("Config", config.logLevel);
         if (!(await ConfigLoader.exists(file))) {
-            new Logger("Config", config.logLevel).warn("Config does not exist, creating default '%s'", file);
+            logger.warn("Config does not exist, creating default '%s'", file);
             await ConfigLoader.createDefault(file);
             return config;
         }
+        let data: string;
 
         try {
-            const fd = await open(file, "r");
-            const data = await fd.readFile("utf-8");
-            config = JSON.parse(data) as Config;
+            const fd: FileHandle = await open(file, "r");
+            data = await fd.readFile("utf-8");
             fd.close();
-            return config;
+
         } catch (e) {
-            new Logger("Config", config.logLevel).error("Failed to read config '%s': %s", file, e);
-            process.exit(1); //TODO: better exit handling
+            logger.error("Failed to read config '%s': %s", file, e);
+            process.exit(1);
         }
+
+        try {
+            config = JSON.parse(data) as Config;
+        }
+        catch (e) {
+            logger.error("Failed to parse config '%s': %s", file, e);
+            process.exit(1); 
+        }
+
         return config;
     }
 
@@ -52,10 +61,12 @@ export class ConfigLoader {
      * @returns a default config instance
      */
     public static getDefault(): Config {
-        return  {
+        return {
             port: 25565,
             logLevel: Logger.Level.INFO,
-            shutdownKickReason: "Server closed"
+            shutdownKickReason: {
+                text: "Server closed"
+            }
         };
 
     }

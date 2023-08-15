@@ -27,7 +27,7 @@ export default class ConnectionPool {
      * @param [reason] The reason for the disconnect
      * @returns Whether all connections disconnected successfully
      */
-    public async disconnectAll (reason?: string): Promise<boolean> {
+    public async disconnectAll (reason?: string | ChatComponent): Promise<boolean> {
         const promises: Promise<boolean>[] = [];
         for (const connection of this.connections)
             promises.push(this.disconnect(connection.id, reason));
@@ -40,18 +40,19 @@ export default class ConnectionPool {
      * @param [reason] The reason for the disconnect
      * @returns Whether the connection was found and disconnected
      */
-    public async disconnect(id: string, reason?: string): Promise<boolean> {
+    public async disconnect(id: string, reason?: string | ChatComponent): Promise<boolean> {
         const connection = this.get(id);
         if (!connection) return false;
         const index = this.connections.indexOf(connection);
         if (index === -1) return false;
+        const message = typeof reason === "string" ? {text: reason} : reason!;
         if (reason) switch (connection.state) {
             case Connection.State.LOGIN: {
-                await new DisconnectLoginPacket({text: reason}).send(connection);
+                await new DisconnectLoginPacket(message).send(connection);
                 break;
             }
             case Connection.State.PLAY: {
-                await new DisconnectPlayPacket({text: reason}).send(connection);
+                await new DisconnectPlayPacket(message).send(connection);
                 break;
             }
             default: {
