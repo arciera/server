@@ -10,6 +10,7 @@ import Connection from "./Connection.js";
 import HandshakePacket from "./packet/client/HandshakePacket";
 import LoginPacket from "./packet/client/LoginPacket";
 import { Config } from "./Config.js";
+import Scheduler from "./Scheduler.js";
 
 type ServerEvents = {
     /**
@@ -67,6 +68,7 @@ type ServerEvents = {
 export default class Server extends (EventEmitter as new () => TypedEventEmitter<ServerEvents>) {
     private readonly server = net.createServer();
     public readonly logger: Logger;
+    public readonly scheduler: Scheduler = new Scheduler(20);
     public readonly connections: ConnectionPool = new ConnectionPool();
 
     public static readonly path: string = path.dirname(path.join(new URL(import.meta.url).pathname, ".."));
@@ -94,6 +96,7 @@ export default class Server extends (EventEmitter as new () => TypedEventEmitter
             }),
             this.connections.disconnectAll(this.config.shutdownKickReason),
         ]);
+        await this.scheduler.stop();
         this.emit("closed");
     }
 
