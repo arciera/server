@@ -16,7 +16,7 @@ class Scheduler {
     /**
      * Scheduler tasks
      */
-    #tasks: Scheduler.Task[] = [];
+    readonly #tasks: Scheduler.Task[] = [];
 
     #schedulerStopResolve: ((value: true | PromiseLike<true>) => void) | null = null;
     #schedulerStopPromise: Promise<true> | null = null;
