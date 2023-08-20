@@ -336,6 +336,7 @@ namespace Scheduler {
         public run(): void {
             this.code();
             this.#executed = true;
+            this.removeAllListeners();
         }
     }
 }
