@@ -170,10 +170,10 @@ class Scheduler extends (EventEmitter as new () => TypedEventEmitter<SchedulerEv
      * Schedule task to run at a specific scheduler age (tick)
      *
      * @param code Task code
-     * @param delay Target scheduler age (tick) to run task at
+     * @param targetAge Target scheduler age (tick) to run task at
      */
-    public scheduleAge(code: () => void, delay: number): Scheduler.Task {
-        const task = new Scheduler.Task(code, this.#age + delay, this);
+    public scheduleAge(code: () => void, targetAge: number): Scheduler.Task {
+        const task = new Scheduler.Task(code, targetAge, this);
         this.#tasks.push(task);
         return task;
     }
