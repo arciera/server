@@ -2,7 +2,24 @@ import EventEmitter from "node:events";
 import {randomUUID} from "node:crypto";
 import TypedEventEmitter from "./types/TypedEventEmitter";
 
-class Scheduler {
+type SchedulerEvents = {
+    /**
+     * Scheduler is paused
+     */
+    paused: () => void;
+
+    /**
+     * Scheduler is started/resumed
+     */
+    started: () => void;
+
+    /**
+     * Scheduler terminated
+     */
+    terminating: () => void;
+}
+
+class Scheduler extends (EventEmitter as new () => TypedEventEmitter<SchedulerEvents>) {
     /**
      * Scheduler age (in ticks)
      */
@@ -33,6 +50,7 @@ class Scheduler {
      * @param [start] Start scheduler
      */
     public constructor(public readonly frequency: number, start?: boolean) {
+        super();
         if (start) this.start();
     }
 
@@ -43,6 +61,7 @@ class Scheduler {
         this.#running = true;
         this.#schedulerStopPromise = new Promise<true>(r => this.#schedulerStopResolve = r);
         this._nextTick();
+        this.emit("started");
     }
 
     /**
@@ -52,6 +71,7 @@ class Scheduler {
     public pause(): Promise<boolean> {
         if (!this.#running) return Promise.resolve(false);
         this.#running = false;
+        this.emit("paused");
         return this.#schedulerStopPromise!;
     }
 
@@ -66,6 +86,7 @@ class Scheduler {
             task.emit("notPlanned");
             this._delete(task);
         });
+        this.emit("terminating");
         return this.#schedulerStopPromise!;
     }
 
