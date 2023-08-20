@@ -82,10 +82,12 @@ class Scheduler extends (EventEmitter as new () => TypedEventEmitter<SchedulerEv
     public stop(): Promise<boolean> {
         if (!this.#running) return Promise.resolve(false);
         this.#running = false;
-        this.#tasks.forEach(task => {
+        while (this.#tasks.length > 0) {
+            const task = this.#tasks.pop()!;
             task.emit("notPlanned");
-        });
             this.delete(task);
+            task.removeAllListeners();
+        }
         this.emit("terminating");
         return this.#schedulerStopPromise!;
     }
