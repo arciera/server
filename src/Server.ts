@@ -81,6 +81,10 @@ export default class Server extends (EventEmitter as new () => TypedEventEmitter
     }
 
     public start() {
+        this.scheduler.on("started", () => this.logger.debug("Scheduler started, freq=" + this.scheduler.frequency + "Hz"));
+        this.scheduler.on("paused", () => this.logger.debug("Scheduler paused, age=" + this.scheduler.age));
+        this.scheduler.on("terminating", () => this.logger.debug("Scheduler terminated, age=" + this.scheduler.age));
+        this.scheduler.start();
         this.server.listen(this.config.port, () => this.emit("listening", this.config.port));
         this.server.on("connection", this.onConnection.bind(this));
     }
