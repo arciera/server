@@ -339,6 +339,128 @@ namespace Scheduler {
             this.removeAllListeners();
         }
     }
+
+    type RepeatingTaskEvents = {
+        /**
+         * All repeats have been executed
+         */
+        "completed": () => void;
+    }
+
+    /**
+     * A repeating task
+     */
+    export class RepeatingTask extends (EventEmitter as new () => TypedEventEmitter<TaskEvents & RepeatingTaskEvents>) {
+        /**
+         * Number of times the task will repeat. This may be `Infinity`, in which case the tasks repeats until the scheduler is terminated.
+         */
+        public readonly repeats: number;
+
+        /**
+         * Interval between each repeat
+         */
+        public readonly interval: number;
+
+        /**
+         * Target scheduler age (tick) for first execution
+         */
+        public readonly targetAge: number;
+
+        /**
+         * Task scheduler
+         */
+        public readonly scheduler: Scheduler;
+
+        /**
+         * Task code
+         */
+        private readonly code: () => void;
+
+        /**
+         * Current task
+         */
+        #task: Task | null = null;
+
+        /**
+         * Number of tasks that have been executed
+         */
+        #executed: number = 0;
+
+        /**
+         * Whether this repeating task has been cancelled
+         */
+        #cancelled: boolean = false;
+
+        /**
+         * Create repeating task
+         *
+         * @param code Task code
+         * @param interval Interval between each repeat
+         * @param scheduler Scheduler
+         * @param [repeats] Number of times the task will repeat. This may be `Infinity`, in which case the tasks repeats until the scheduler is terminated. Default: `Infinity`
+         * @param [targetAge] Target scheduler age (tick) for first execution. Default: `0` (next tick)
+         */
+        public constructor(code: () => void, interval: number, scheduler: Scheduler, repeats: number = Infinity, targetAge: number = 0) {
+            super();
+            this.code = code;
+            this.interval = interval;
+            this.scheduler = scheduler;
+            this.repeats = repeats;
+            this.targetAge = targetAge;
+            if (this.repeats > 0) this.createTask();
+
+            this.scheduler.on("terminating", () => {
+                //console.log(this.task?.executed, this.task);
+                if (this.task?.executed) this.emit("notPlanned");
+            });
+        }
+
+        /**
+         * Cancel this repeating task
+         */
+        public cancel(): void {
+            if (this.#cancelled) return;
+            this.#cancelled = true;
+            if (this.#task) this.#task.cancel();
+            else this.emit("cancelled");
+        }
+
+        /**
+         * Create task
+         */
+        private createTask(): void {
+            if (this.executed === 0) this.#task = this.scheduler.scheduleAge(() => this.taskCode(), this.targetAge);
+            else this.#task = this.scheduler.scheduleAge(() => this.taskCode(), this.scheduler.age + this.interval);
+            this.#task.once("cancelled", () => this.emit("cancelled"));
+            this.#task.once("notPlanned", () => this.emit("notPlanned"));
+        }
+
+        /**
+         * Scheduled task code
+         */
+        private taskCode(): void {
+            this.code();
+            ++this.#executed;
+            if (this.#executed < this.repeats) {
+                if (!this.#cancelled) this.createTask();
+            }
+            else this.emit("completed");
+        }
+
+        /**
+         * Get current task
+         */
+        public get task(): Task | null {
+            return this.#task;
+        }
+
+        /**
+         * Number of times the task has been executed
+         */
+        public get executed(): number {
+            return this.#executed;
+        }
+    }
 }
 
 export default Scheduler;
