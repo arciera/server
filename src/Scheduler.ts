@@ -84,8 +84,8 @@ class Scheduler extends (EventEmitter as new () => TypedEventEmitter<SchedulerEv
         this.#running = false;
         this.#tasks.forEach(task => {
             task.emit("notPlanned");
-            this._delete(task);
         });
+            this.delete(task);
         this.emit("terminating");
         return this.#schedulerStopPromise!;
     }
@@ -143,10 +143,9 @@ class Scheduler extends (EventEmitter as new () => TypedEventEmitter<SchedulerEv
         if (now.getTime() - this.lastTick.getTime() < this.ticksToMs(1)) return this._nextTick();
         ++this.#age;
         this.lastTick = now;
-
         const tasks = this.#tasks.filter(task => task.targetAge <= this.#age).sort((a, b) => a.targetAge - b.targetAge);
         for (const task of tasks) {
-            this._delete(task);
+            this.delete(task);
             task.run();
         }
 
@@ -204,7 +203,7 @@ class Scheduler extends (EventEmitter as new () => TypedEventEmitter<SchedulerEv
      * @param task Task to cancel
      * @internal
      */
-    public _delete(task: Scheduler.Task): boolean {
+    private delete(task: Scheduler.Task): boolean {
         const index = this.#tasks.indexOf(task);
         if (index < 0) return false;
         this.#tasks.splice(index, 1);
@@ -218,7 +217,7 @@ class Scheduler extends (EventEmitter as new () => TypedEventEmitter<SchedulerEv
      * @returns `false` if the task was not found in the scheduler queue (possibly already executed), `true` otherwise
      */
     public cancel(task: Scheduler.Task): boolean {
-        const deleted = this._delete(task);
+        const deleted = this.delete(task);
         if (deleted) task.emit("cancelled");
         return deleted;
     }
