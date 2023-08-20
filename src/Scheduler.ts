@@ -195,8 +195,19 @@ class Scheduler extends (EventEmitter as new () => TypedEventEmitter<SchedulerEv
      *
      * @param code Task code
      */
-    public schedule(code: () => void): Scheduler.Task {
-        return this.scheduleTicks(code, 0);
+    public schedule(code: () => void): Scheduler.Task;
+    /**
+     * Schedule a task
+     *
+     * @param task The task
+     */
+    public schedule(task: Scheduler.Task): Scheduler.Task;
+    public schedule(a: (() => void) | Scheduler.Task): Scheduler.Task {
+        if (a instanceof Scheduler.Task) {
+            this.#tasks.push(a);
+            return a;
+        }
+        else return this.scheduleTicks(a, 0);
     }
 
     /**
