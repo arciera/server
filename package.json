@@ -15,7 +15,7 @@
   "author": "",
   "license": "GNU GPLv3",
   "devDependencies": {
-    "@types/node": "^20.11.30",
+    "@types/node": "^20.12.2",
     "typescript": "^5.4.3",
     "@vercel/ncc": "^0.38.1"
   }
