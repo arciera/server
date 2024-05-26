@@ -50,6 +50,5 @@ server.on("packet.LoginPacket", (packet, conn) => {
 });
 
 server.on("packet.PingPacket", (packet, conn) => {
-    console.log(packet.data)
     new PongPacket(packet).send(conn);
 });
