@@ -11,15 +11,15 @@ export default class StatusResponsePacket extends ServerPacket {
                 "version": server.config.server.version,
                 "players": {
                     "max": server.config.server.maxPlayers,
-                    "online": 2, //todo: set to NaN and see if it dies in misery
+                    "online":  2,
                     "sample": [
                         {
                             "name": "lp721mk",
-                            "uuid": "372a65f92685477d84eb0d55e78668cc"
+                            "id": "c73d1477-a7c9-40c0-a86c-387a95917332"
                         },
                         {
                             "name": "km127pl",
-                            "uuid": "d8fac45d0c7d46b7ba406a6921186bda"
+                            "id": "4ab89680-76a0-4e82-b90a-56cff4b38290"
                         }
                     ]
                 },
