@@ -93,4 +93,17 @@ export default class ParsedPacket {
         this.packetData.splice(index, 2);
         return result;
     }
+
+    /**
+     * Parse Long
+     * After parsing, the buffer will be sliced
+     *
+     * @param [index=0] Index in the packet
+     */
+    public getLong(index = 0): bigint | null {
+        if (this.isOutOfRange(index)) return null;
+        const result = Packet.parseLong(this.packetBuffer.subarray(index));
+        this.packetData.splice(index, 8);
+        return result;
+    }
 }

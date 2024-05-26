@@ -18,11 +18,14 @@ export default class PingPacket {
         this.packet = packet;
 
         this.data = {
-            payload: this.packet.getVarInt()!
+            payload: this.packet.getLong()!
         } as const;
+
+        console.log(this);
     }
 
     execute(_conn: Connection, _server: Server): void {
+        // pass
     }
 
     public static readonly id = 0x01;

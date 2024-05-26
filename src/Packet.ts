@@ -180,6 +180,42 @@ export default class Packet {
     }
 
     /**
+     * Parse ULong
+     * @param buffer
+     */
+     public static parseULong(buffer: Buffer): bigint {
+        return buffer.readBigUint64BE(0);
+    }
+
+    /**
+     * Write ULong
+     * @param value
+     */
+    public static writeULong(value: bigint): Buffer {
+        const buffer = Buffer.alloc(8);
+        buffer.writeBigUint64BE(value);
+        return buffer;
+    }
+
+    /**
+     * Parse Long
+     * @param buffer
+     */
+    public static parseLong(buffer: Buffer): bigint {
+        return buffer.readBigInt64BE(0);
+    }
+
+    /**
+     * Write Long
+     * @param value
+     */
+    public static writeLong(value: bigint): Buffer {
+        const buffer = Buffer.alloc(8);
+        buffer.writeBigInt64BE(value);
+        return buffer;
+    }
+
+    /**
      * Parse chat
      * @param buffer
      */
