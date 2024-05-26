@@ -26,7 +26,15 @@ export default class HandshakePacket {
     }
 
     execute(conn: Connection, _server: Server): void {
-        conn._setState(Connection.State.LOGIN);
+        switch (this.data.nextState) {
+            case 1:
+                conn._setState(Connection.State.STATUS);
+                break;
+            case 2:
+                conn._setState(Connection.State.LOGIN);
+                break;
+        }
+        
     }
 
     public static readonly id = 0x00;
@@ -35,7 +43,7 @@ export default class HandshakePacket {
         if (conn.state !== Connection.State.NONE) return null;
         try {
             const p = new this(data);
-            return (p.packet.id === this.id && p.data.nextState === 2) ? p : null;
+            return (p.packet.id === this.id) ? p : null;
         }
         catch {
             return null;

@@ -4,6 +4,7 @@ import HandshakePacket from "./packet/client/HandshakePacket.js";
 import LoginPacket from "./packet/client/LoginPacket.js";
 import Connection from "./Connection";
 import PingPacket from "./packet/client/PingPacket.js";
+import StatusRequestPacket from "./packet/client/StatusRequestPacket.js";
 
 export default class Packet {
     readonly #data: number[];
@@ -246,7 +247,7 @@ export default class Packet {
     /**
      * Packet types
      */
-    public static readonly clientTypes: TypedClientPacketStatic[] = [HandshakePacket, LoginPacket, PingPacket];
+    public static readonly clientTypes: TypedClientPacketStatic[] = [HandshakePacket, StatusRequestPacket, LoginPacket, PingPacket];
 
 
     /**

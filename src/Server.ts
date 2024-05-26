@@ -13,6 +13,7 @@ import { Config } from "./Config.js";
 import Scheduler from "./Scheduler.js";
 import { readFile } from "node:fs/promises";
 import PingPacket from "./packet/client/PingPacket.js";
+import StatusRequestPacket from "./packet/client/StatusRequestPacket.js";
 
 type ServerEvents = {
     /**
@@ -65,6 +66,13 @@ type ServerEvents = {
      * @param connection Connection the packet was received from
      */
     "packet.LoginPacket": (packet: LoginPacket, connection: Connection) => void;
+
+    /**
+     * Status request packet received
+     * @param packet Packet that was received
+     * @param connection Connection the packet was received from
+     */
+    "packet.StatusRequestPacket": (packet: StatusRequestPacket, connection: Connection) => void;
 
     /**
      * Ping packet received

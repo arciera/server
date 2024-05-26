@@ -23,8 +23,6 @@ server.on("connection", (conn) => {
         ip: conn.socket.remoteAddress,
         port: conn.socket.remotePort
     });
-
-    new StatusResponsePacket(server).send(conn);
 });
 
 server.on("disconnect", (conn) => {
@@ -52,3 +50,7 @@ server.on("packet.LoginPacket", (packet, conn) => {
 server.on("packet.PingPacket", (packet, conn) => {
     new PongPacket(packet).send(conn);
 });
+
+server.on("packet.StatusRequestPacket", (_, conn) => {
+    new StatusResponsePacket(server).send(conn);
+})
