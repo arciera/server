@@ -1,7 +1,6 @@
 import { open, access, constants, FileHandle } from "node:fs/promises";
 import Logger from "./Logger.js";
 
-
 export interface Config {
     /**
      * Port to listen on 
@@ -17,6 +16,48 @@ export interface Config {
      * Kick reason for when the server is shutting down
      */
     shutdownKickReason: ChatComponent;
+
+    /**
+     * The server config
+     */
+    server: ServerConfig
+}
+
+export interface ServerConfig {
+    /**
+     * The motd of the server (description)
+     * Split optionally by `\n`
+     */
+    motd: string,
+
+    /**
+     * A path to the icon of the server
+     * @description Must be 64x64 and a PNG
+     */
+    favicon?: string,
+
+    /**
+     * Enforce message signing (since 1.18+)
+     */
+    enforcesSecureChat: boolean,
+
+    /**
+     * Max number of players that may be logged on at the same time
+     */
+    maxPlayers: number,
+
+    /**
+     * The protocol version & number
+     * @example
+     * ```json
+     * "name": "1.20.6",
+     * "protocol": 766
+     * ```
+     */
+    version: {
+        name: string,
+        protocol: number
+    }
 }
 
 export class ConfigLoader {
@@ -51,6 +92,15 @@ export class ConfigLoader {
             logLevel: Logger.Level.INFO,
             shutdownKickReason: {
                 text: "Server closed"
+            },
+            server: {
+                motd: "A Minecraft server",
+                enforcesSecureChat: false,
+                maxPlayers: 100,
+                version: {
+                    name: "1.20.6",
+                    protocol: 766
+                }
             }
         };
 

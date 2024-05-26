@@ -11,6 +11,8 @@ import HandshakePacket from "./packet/client/HandshakePacket";
 import LoginPacket from "./packet/client/LoginPacket";
 import { Config } from "./Config.js";
 import Scheduler from "./Scheduler.js";
+import { readFile } from "node:fs/promises";
+import PingPacket from "./packet/client/PingPacket.js";
 
 type ServerEvents = {
     /**
@@ -63,6 +65,13 @@ type ServerEvents = {
      * @param connection Connection the packet was received from
      */
     "packet.LoginPacket": (packet: LoginPacket, connection: Connection) => void;
+
+    /**
+     * Ping packet received
+     * @param packet Packet that was received
+     * @param connection Connection the packet was received from
+     */
+    "packet.PingPacket": (packet: PingPacket, connection: Connection) => void;
 };
 
 export default class Server extends (EventEmitter as new () => TypedEventEmitter<ServerEvents>) {
@@ -74,13 +83,22 @@ export default class Server extends (EventEmitter as new () => TypedEventEmitter
     public static readonly path: string = path.dirname(path.join(new URL(import.meta.url).pathname, ".."));
     public readonly config: Config;
 
+    public favicon: string = "data:image/png;base64,";
+
     public constructor(config: Config) {
         super();
         this.config = Object.freeze(config);
         this.logger = new Logger("Server", this.config.logLevel);
     }
 
-    public start() {
+    public async start() {
+
+        // add a favicon if such is specified
+        if (this.config.server.favicon) {
+            const data = await readFile(this.config.server.favicon);
+            this.favicon += Buffer.from(data).toString("base64");
+        }
+
         this.scheduler.on("started", () => this.logger.debug("Scheduler started, freq=" + this.scheduler.frequency + "Hz"));
         this.scheduler.on("paused", () => this.logger.debug("Scheduler paused, age=" + this.scheduler.age));
         this.scheduler.on("terminating", () => this.logger.debug("Scheduler terminated, age=" + this.scheduler.age));

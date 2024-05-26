@@ -2,6 +2,8 @@ import { Config, ConfigLoader } from "./src/Config.js";
 import Server from "./src/Server.js";
 import LoginSuccessPacket from "./src/packet/server/LoginSuccessPacket.js";
 import Connection from "./src/Connection.js";
+import StatusResponsePacket from "./src/packet/server/StatusResponsePacket.js";
+import PongPacket from "./src/packet/server/PongPacket.js";
 
 const config: Config = await ConfigLoader.fromFile("config.json");
 const server = new Server(config);
@@ -21,6 +23,8 @@ server.on("connection", (conn) => {
         ip: conn.socket.remoteAddress,
         port: conn.socket.remotePort
     });
+
+    new StatusResponsePacket(server).send(conn);
 });
 
 server.on("disconnect", (conn) => {
@@ -43,4 +47,9 @@ process.on("SIGINT", () => {
 
 server.on("packet.LoginPacket", (packet, conn) => {
     new LoginSuccessPacket(packet.data.uuid ?? Buffer.from("OfflinePlayer:" + packet.data.username, "utf-8").toString("hex").slice(0, 32), packet.data.username).send(conn).then();
+});
+
+server.on("packet.PingPacket", (packet, conn) => {
+    console.log(packet.data)
+    new PongPacket(packet).send(conn);
 });

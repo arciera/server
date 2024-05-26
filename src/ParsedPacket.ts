@@ -37,7 +37,7 @@ export default class ParsedPacket {
         this.packetData.splice(index, Packet.writeVarInt(result).byteLength);
         return result;
     }
-
+    
     /**
      * Parse String (n)
      * After parsing, the buffer will be sliced
