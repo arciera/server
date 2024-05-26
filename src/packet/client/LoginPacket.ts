@@ -3,6 +3,7 @@ import StaticImplements from "../../decorator/StaticImplements.js";
 import ParsedPacket from "../../ParsedPacket.js";
 import Server from "../../Server";
 import Connection from "../../Connection.js";
+import { C2S } from "../Packets.js";
 
 @StaticImplements<TypedClientPacketStatic>()
 export default class LoginPacket {
@@ -28,7 +29,7 @@ export default class LoginPacket {
         conn._setState(Connection.State.LOGIN);
     }
 
-    public static readonly id = 0x00;
+    public static readonly id = C2S.Login;
 
     public static isThisPacket(data: ParsedPacket, conn: Connection): TypedClientPacket | null {
         if (conn.state !== Connection.State.LOGIN) return null;

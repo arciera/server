@@ -3,6 +3,7 @@ import StaticImplements from "../../decorator/StaticImplements.js";
 import Server from "../../Server";
 import ParsedPacket from "../../ParsedPacket";
 import Connection from "../../Connection.js";
+import { C2S } from "../Packets.js";
 
 @StaticImplements<TypedClientPacketStatic>()
 export default class HandshakePacket {
@@ -37,7 +38,7 @@ export default class HandshakePacket {
         
     }
 
-    public static readonly id = 0x00;
+    public static readonly id = C2S.Handshake;
 
     public static isThisPacket(data: ParsedPacket, conn: Connection): TypedClientPacket | null {
         if (conn.state !== Connection.State.NONE) return null;

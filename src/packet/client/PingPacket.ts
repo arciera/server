@@ -3,6 +3,7 @@ import StaticImplements from "../../decorator/StaticImplements.js";
 import Server from "../../Server";
 import ParsedPacket from "../../ParsedPacket";
 import Connection from "../../Connection.js";
+import { C2S } from "../Packets.js";
 
 @StaticImplements<TypedClientPacketStatic>()
 export default class PingPacket {
@@ -26,7 +27,7 @@ export default class PingPacket {
         // pass
     }
 
-    public static readonly id = 0x01;
+    public static readonly id = C2S.Ping;
 
     public static isThisPacket(data: ParsedPacket, _conn: Connection): TypedClientPacket | null {
         try {

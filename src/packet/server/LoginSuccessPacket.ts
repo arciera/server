@@ -1,11 +1,12 @@
 import ServerPacket from "../../ServerPacket.js";
 import Connection from "../../Connection.js";
+import { S2C } from "../Packets.js";
 
 /**
  * A Minecraft protocol client-bound LoginSuccess packet.
  */
 export default class LoginSuccessPacket extends ServerPacket {
-    public static readonly id = 0x02;
+    public static readonly id = S2C.LoginSuccess;
 
     public constructor(uuid: string, username: string) {
         super(Buffer.concat([

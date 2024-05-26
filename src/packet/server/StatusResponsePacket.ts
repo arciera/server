@@ -1,8 +1,9 @@
 import Server from "../../Server.js";
 import ServerPacket from "../../ServerPacket.js";
+import { S2C } from "../Packets.js";
 
 export default class StatusResponsePacket extends ServerPacket {
-    public static readonly id = 0x00;
+    public static readonly id = S2C.StatusResponse;
 
     public constructor(server: Server) {
         super(Buffer.concat([
