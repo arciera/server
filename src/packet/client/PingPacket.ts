@@ -20,8 +20,6 @@ export default class PingPacket {
         this.data = {
             payload: this.packet.getLong()!
         } as const;
-
-        console.log(this);
     }
 
     execute(_conn: Connection, _server: Server): void {
