@@ -7,6 +7,7 @@ import PongPacket from "./src/packet/server/PongPacket.js";
 import ServerPacket from "./src/ServerPacket.js";
 import { setTimeout } from "timers/promises";
 import FinishConfigurationPacket from "./src/packet/server/configuration/FinishConfigurationPacket.js";
+import RegistryDataPacket from "./src/packet/server/configuration/RegistryDataPacket.js";
 
 const config: Config = await ConfigLoader.fromFile("config.json");
 const server = new Server(config);
@@ -58,6 +59,9 @@ server.on("packet.StatusRequestPacket", (_, conn) => {
     new StatusResponsePacket(server).send(conn);
 })
 
-server.on("packet.LoginAck", (_, conn) => {
-    new FinishConfigurationPacket().send(conn);
+server.on("packet.LoginAck", async (_, conn) => {
+    await new RegistryDataPacket().send(conn).then();
+    await new FinishConfigurationPacket().send(conn).then();
 })
+
+//FIXME: loginack not executed

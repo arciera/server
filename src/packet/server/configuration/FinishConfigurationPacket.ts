@@ -12,7 +12,6 @@ export default class FinishConfigurationPacket extends ServerPacket {
     }
 
     public override send(connection: Connection) {
-        console.log('a')
         connection._setState(Connection.State.PLAY);
         return super.send(connection);
     }
