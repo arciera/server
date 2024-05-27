@@ -1,6 +1,7 @@
 ## TODO
 
 ### -> Login
+
     #### State `CONFIGURATION`
     - Send [registry data](https://wiki.vg/Protocol#Registry_Data) *nbt*
     - Send feature flag packet (0x08) specifying no special features

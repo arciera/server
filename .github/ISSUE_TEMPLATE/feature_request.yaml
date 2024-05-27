@@ -3,18 +3,18 @@ description: Request a feature
 title: "[Feature]: "
 labels: ["enhancement"]
 assignees:
-  - octocat
+    - octocat
 body:
-  - type: markdown
-    attributes:
-      value: |
-        Thanks for taking the time to request a feature
-  - type: textarea
-    id: feature
-    attributes:
-      label: What feature would you like to see?
-      description: Also tell us, what do you expect of this feature?
-      placeholder: Tell us what you want to see!
-      value: "A feature!"
-    validations:
-      required: true
+    - type: markdown
+      attributes:
+          value: |
+              Thanks for taking the time to request a feature
+    - type: textarea
+      id: feature
+      attributes:
+          label: What feature would you like to see?
+          description: Also tell us, what do you expect of this feature?
+          placeholder: Tell us what you want to see!
+          value: "A feature!"
+      validations:
+          required: true
