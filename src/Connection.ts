@@ -2,6 +2,7 @@ import net from "node:net";
 import * as crypto from "node:crypto";
 import Server from "./Server";
 import Packet from "./Packet.js";
+import Logger from "./Logger.js";
 
 /**
  * A TCP socket connection to the server.
@@ -33,6 +34,7 @@ class Connection {
 
     /** @internal */
     public _setState(state: Connection.State): void {
+        new Logger("State", Logger.Level.DEBUG).debug(`Switching state from ${this.#state} to ${state}`)
         this.#state = state;
     }
 
@@ -101,6 +103,13 @@ namespace Connection {
          * Player is connecting to the server
          */
         LOGIN,
+
+        /**
+         * Configuration state
+         *
+         * Player is connected and is awaiting configuration data
+         */
+        CONFIGURATION,
 
         /**
          * Play state

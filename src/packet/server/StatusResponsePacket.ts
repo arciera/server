@@ -7,7 +7,7 @@ export default class StatusResponsePacket extends ServerPacket {
 
     public constructor(server: Server) {
         super(Buffer.concat([
-            ServerPacket.writeVarInt(0x00),
+            ServerPacket.writeVarInt(StatusResponsePacket.id),
             ServerPacket.writeString(JSON.stringify({
                 "version": server.config.server.version,
                 "players": {

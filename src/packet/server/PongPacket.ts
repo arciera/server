@@ -7,7 +7,7 @@ export default class PongPacket extends ServerPacket {
 
     public constructor(c2s: PingPacket) {
         super(Buffer.concat([
-            ServerPacket.writeVarInt(0x01),
+            ServerPacket.writeVarInt(PongPacket.id),
             ServerPacket.writeLong(c2s.data.payload),
         ]));
     }

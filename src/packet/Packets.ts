@@ -30,7 +30,14 @@ export enum C2S {
      * 
      * State: Status
      */
-    Status = 0x00,
+    StatusRequest = 0x00,
+
+    /**
+     * Login Ack
+     * 
+     * State: Login
+     */
+    LoginAcknowledge = 0x03,
 }
 
 /**
@@ -73,4 +80,25 @@ export enum S2C {
      * State: status
      */
     StatusResponse = 0x00,
+
+    /**
+     * Registry Data
+     * 
+     * State: join
+     */
+    RegistryData = 0x05,
+
+    /**
+     * Registry Data
+     * 
+     * State: join
+     */
+    ConfigurationKeepAlive = 0x03,
+
+    /**
+     * Finish Configuration
+     * 
+     * State: join->play
+     */
+    FinishConfiguration = 0x02,
 }

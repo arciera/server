@@ -4,6 +4,9 @@ import LoginSuccessPacket from "./src/packet/server/LoginSuccessPacket.js";
 import Connection from "./src/Connection.js";
 import StatusResponsePacket from "./src/packet/server/StatusResponsePacket.js";
 import PongPacket from "./src/packet/server/PongPacket.js";
+import ServerPacket from "./src/ServerPacket.js";
+import { setTimeout } from "timers/promises";
+import FinishConfigurationPacket from "./src/packet/server/configuration/FinishConfigurationPacket.js";
 
 const config: Config = await ConfigLoader.fromFile("config.json");
 const server = new Server(config);
@@ -44,7 +47,7 @@ process.on("SIGINT", () => {
 });
 
 server.on("packet.LoginPacket", (packet, conn) => {
-    new LoginSuccessPacket(packet.data.uuid ?? Buffer.from("OfflinePlayer:" + packet.data.username, "utf-8").toString("hex").slice(0, 32), packet.data.username).send(conn).then();
+    new LoginSuccessPacket(packet.data.uuid ?? Buffer.from("OfflinePlayer:" + packet.data.username, "utf-8").toString("hex").slice(0, 32), packet.data.username).send(conn)
 });
 
 server.on("packet.PingPacket", (packet, conn) => {
@@ -53,4 +56,8 @@ server.on("packet.PingPacket", (packet, conn) => {
 
 server.on("packet.StatusRequestPacket", (_, conn) => {
     new StatusResponsePacket(server).send(conn);
+})
+
+server.on("packet.LoginAck", (_, conn) => {
+    new FinishConfigurationPacket().send(conn);
 })

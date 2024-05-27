@@ -14,6 +14,7 @@ import Scheduler from "./Scheduler.js";
 import { readFile } from "node:fs/promises";
 import PingPacket from "./packet/client/PingPacket.js";
 import StatusRequestPacket from "./packet/client/StatusRequestPacket.js";
+import LoginAckPacket from "./packet/client/LoginAckPacket.js";
 
 type ServerEvents = {
     /**
@@ -80,6 +81,13 @@ type ServerEvents = {
      * @param connection Connection the packet was received from
      */
     "packet.PingPacket": (packet: PingPacket, connection: Connection) => void;
+
+    /**
+     * Login acknowledge packet
+     * @param packet Packet that was received
+     * @param connection Connection the packet was received from
+     */
+    "packet.LoginAck": (packet: LoginAckPacket, connection: Connection) => void;
 };
 
 export default class Server extends (EventEmitter as new () => TypedEventEmitter<ServerEvents>) {
