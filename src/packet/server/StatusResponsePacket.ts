@@ -1,9 +1,9 @@
-import Server from "../../Server.js"
-import ServerPacket from "../../ServerPacket.js"
-import { S2C } from "../Packets.js"
+import Server from "../../Server.js";
+import ServerPacket from "../../ServerPacket.js";
+import { S2C } from "../Packets.js";
 
 export default class StatusResponsePacket extends ServerPacket {
-	public static readonly id = S2C.StatusResponse
+	public static readonly id = S2C.StatusResponse;
 
 	public constructor(server: Server) {
 		super(
@@ -35,6 +35,6 @@ export default class StatusResponsePacket extends ServerPacket {
 					})
 				),
 			])
-		)
+		);
 	}
 }

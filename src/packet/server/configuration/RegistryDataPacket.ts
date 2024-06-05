@@ -1,12 +1,12 @@
-import ServerPacket from "../../../ServerPacket.js"
-import { S2C } from "../../Packets.js"
-import { NbtReader, NbtWriter, tagTypes } from "../../../nbt.js"
+import ServerPacket from "../../../ServerPacket.js";
+import { S2C } from "../../Packets.js";
+import { NbtReader, NbtWriter, tagTypes } from "../../../nbt.js";
 
 export default class RegistryDataPacket extends ServerPacket {
-	public static readonly id = S2C.RegistryData
+	public static readonly id = S2C.RegistryData;
 
 	public constructor() {
-		const writer = new NbtWriter()
+		const writer = new NbtWriter();
 		writer.compound({
 			"minecraft:worldgen/biome": {
 				type: tagTypes.compound,
@@ -30,12 +30,12 @@ export default class RegistryDataPacket extends ServerPacket {
 					},
 				},
 			},
-		})
+		});
 		super(
 			Buffer.concat([
 				ServerPacket.writeVarInt(RegistryDataPacket.id),
 				Buffer.from(writer.buffer.slice(0, writer.offset)),
 			])
-		)
+		);
 	}
 }

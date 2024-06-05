@@ -1,26 +1,26 @@
-import { open, access, constants, FileHandle } from "node:fs/promises"
-import Logger from "./Logger.js"
+import { open, access, constants, FileHandle } from "node:fs/promises";
+import Logger from "./Logger.js";
 
 export interface Config {
 	/**
 	 * Port to listen on
 	 */
-	port: number
+	port: number;
 
 	/**
 	 * The level to display logs at
 	 */
-	logLevel: Logger.Level
+	logLevel: Logger.Level;
 
 	/**
 	 * Kick reason for when the server is shutting down
 	 */
-	shutdownKickReason: ChatComponent
+	shutdownKickReason: ChatComponent;
 
 	/**
 	 * The server config
 	 */
-	server: ServerConfig
+	server: ServerConfig;
 }
 
 export interface ServerConfig {
@@ -28,23 +28,23 @@ export interface ServerConfig {
 	 * The motd of the server (description)
 	 * Split optionally by `\n`
 	 */
-	motd: string
+	motd: string;
 
 	/**
 	 * A path to the icon of the server
 	 * @description Must be 64x64 and a PNG
 	 */
-	favicon?: string
+	favicon?: string;
 
 	/**
 	 * Enforce message signing (since 1.18+)
 	 */
-	enforcesSecureChat: boolean
+	enforcesSecureChat: boolean;
 
 	/**
 	 * Max number of players that may be logged on at the same time
 	 */
-	maxPlayers: number
+	maxPlayers: number;
 
 	/**
 	 * The protocol version & number
@@ -55,9 +55,9 @@ export interface ServerConfig {
 	 * ```
 	 */
 	version: {
-		name: string
-		protocol: number
-	}
+		name: string;
+		protocol: number;
+	};
 }
 
 export class ConfigLoader {
@@ -70,19 +70,19 @@ export class ConfigLoader {
 	 */
 	public static async fromFile(file: string): Promise<Config> {
 		if (!(await ConfigLoader.exists(file))) {
-			await ConfigLoader.createDefault(file)
-			const config = ConfigLoader.getDefault()
+			await ConfigLoader.createDefault(file);
+			const config = ConfigLoader.getDefault();
 			new Logger("Config", config.logLevel).warn(
 				"Config does not exist, creating default '%s'",
 				file
-			)
-			return config
+			);
+			return config;
 		}
-		const fd: FileHandle = await open(file, "r")
-		const data: string = await fd.readFile("utf-8")
-		fd.close()
+		const fd: FileHandle = await open(file, "r");
+		const data: string = await fd.readFile("utf-8");
+		fd.close();
 
-		return JSON.parse(data) as Config
+		return JSON.parse(data) as Config;
 	}
 
 	/**
@@ -105,7 +105,7 @@ export class ConfigLoader {
 					protocol: 766,
 				},
 			},
-		}
+		};
 	}
 
 	/**
@@ -115,10 +115,10 @@ export class ConfigLoader {
 	 */
 	public static async exists(file: string): Promise<boolean> {
 		try {
-			await access(file, constants.F_OK)
-			return true
+			await access(file, constants.F_OK);
+			return true;
 		} catch {
-			return false
+			return false;
 		}
 	}
 
@@ -126,8 +126,8 @@ export class ConfigLoader {
 	 * Create the default config file
 	 */
 	public static async createDefault(file: string): Promise<void> {
-		const fd = await open(file, "w")
-		await fd.writeFile(JSON.stringify(ConfigLoader.getDefault(), null, 4))
-		fd.close()
+		const fd = await open(file, "w");
+		await fd.writeFile(JSON.stringify(ConfigLoader.getDefault(), null, 4));
+		fd.close();
 	}
 }

@@ -1,48 +1,48 @@
-import EventEmitter from "node:events"
-import { randomUUID } from "node:crypto"
-import TypedEventEmitter from "./types/TypedEventEmitter"
+import EventEmitter from "node:events";
+import { randomUUID } from "node:crypto";
+import TypedEventEmitter from "./types/TypedEventEmitter";
 
 type SchedulerEvents = {
 	/**
 	 * Scheduler is paused
 	 */
-	paused: () => void
+	paused: () => void;
 
 	/**
 	 * Scheduler is started/resumed
 	 */
-	started: () => void
+	started: () => void;
 
 	/**
 	 * Scheduler terminated
 	 */
-	terminating: () => void
-}
+	terminating: () => void;
+};
 
 class Scheduler extends (EventEmitter as new () => TypedEventEmitter<SchedulerEvents>) {
 	/**
 	 * Scheduler age (in ticks)
 	 */
-	#age: number = 0
+	#age: number = 0;
 
 	/**
 	 * Whether the scheduler is running
 	 */
-	#running: boolean = false
+	#running: boolean = false;
 
 	/**
 	 * Scheduler tasks
 	 */
-	readonly #tasks: Scheduler.Task[] = []
+	readonly #tasks: Scheduler.Task[] = [];
 
 	#schedulerStopResolve: ((value: true | PromiseLike<true>) => void) | null =
-		null
-	#schedulerStopPromise: Promise<true> | null = null
+		null;
+	#schedulerStopPromise: Promise<true> | null = null;
 
 	/**
 	 * Time of last tick
 	 */
-	private lastTick: Date = new Date()
+	private lastTick: Date = new Date();
 
 	/**
 	 * Create scheduler
@@ -54,20 +54,20 @@ class Scheduler extends (EventEmitter as new () => TypedEventEmitter<SchedulerEv
 		public readonly frequency: number,
 		start?: boolean
 	) {
-		super()
-		if (start) this.start()
+		super();
+		if (start) this.start();
 	}
 
 	/**
 	 * Start scheduler
 	 */
 	public start(): void {
-		this.#running = true
+		this.#running = true;
 		this.#schedulerStopPromise = new Promise<true>(
 			(r) => (this.#schedulerStopResolve = r)
-		)
-		this._nextTick()
-		this.emit("started")
+		);
+		this._nextTick();
+		this.emit("started");
 	}
 
 	/**
@@ -75,10 +75,10 @@ class Scheduler extends (EventEmitter as new () => TypedEventEmitter<SchedulerEv
 	 * @returns Promise that resolves when the scheduler has paused. The promise resolves to false if the scheduler was not running.
 	 */
 	public pause(): Promise<boolean> {
-		if (!this.#running) return Promise.resolve(false)
-		this.#running = false
-		this.emit("paused")
-		return this.#schedulerStopPromise!
+		if (!this.#running) return Promise.resolve(false);
+		this.#running = false;
+		this.emit("paused");
+		return this.#schedulerStopPromise!;
 	}
 
 	/**
@@ -86,30 +86,30 @@ class Scheduler extends (EventEmitter as new () => TypedEventEmitter<SchedulerEv
 	 * @returns Promise that resolves when the scheduler has stopped. The promise resolves to false if the scheduler was not running.
 	 */
 	public stop(): Promise<boolean> {
-		if (!this.#running) return Promise.resolve(false)
-		this.#running = false
+		if (!this.#running) return Promise.resolve(false);
+		this.#running = false;
 		while (this.#tasks.length > 0) {
-			const task = this.#tasks.pop()!
-			task.emit("notPlanned")
-			this.delete(task)
-			task.removeAllListeners()
+			const task = this.#tasks.pop()!;
+			task.emit("notPlanned");
+			this.delete(task);
+			task.removeAllListeners();
 		}
-		this.emit("terminating")
-		return this.#schedulerStopPromise!
+		this.emit("terminating");
+		return this.#schedulerStopPromise!;
 	}
 
 	/**
 	 * Scheduler age
 	 */
 	public get age(): number {
-		return this.#age
+		return this.#age;
 	}
 
 	/**
 	 * Whether the scheduler is running
 	 */
 	public get running(): boolean {
-		return this.#running
+		return this.#running;
 	}
 
 	/**
@@ -118,7 +118,7 @@ class Scheduler extends (EventEmitter as new () => TypedEventEmitter<SchedulerEv
 	 * @param ms Milliseconds
 	 */
 	public msToTicks(ms: number): number {
-		return ms / (1000 / this.frequency)
+		return ms / (1000 / this.frequency);
 	}
 
 	/**
@@ -127,7 +127,7 @@ class Scheduler extends (EventEmitter as new () => TypedEventEmitter<SchedulerEv
 	 * @param ticks Ticks
 	 */
 	public ticksToMs(ticks: number): number {
-		return ticks * (1000 / this.frequency)
+		return ticks * (1000 / this.frequency);
 	}
 
 	/**
@@ -142,27 +142,27 @@ class Scheduler extends (EventEmitter as new () => TypedEventEmitter<SchedulerEv
 	public estimateAge(date: Date): number {
 		return (
 			this.age + this.msToTicks(date.getTime() - this.lastTick.getTime())
-		)
+		);
 	}
 
 	/**
 	 * Scheduler tick
 	 */
 	private tick(): void {
-		const now = new Date()
+		const now = new Date();
 		if (now.getTime() - this.lastTick.getTime() < this.ticksToMs(1))
-			return this._nextTick()
-		++this.#age
-		this.lastTick = now
+			return this._nextTick();
+		++this.#age;
+		this.lastTick = now;
 		const tasks = this.#tasks
 			.filter((task) => task.targetAge <= this.#age)
-			.sort((a, b) => a.targetAge - b.targetAge)
+			.sort((a, b) => a.targetAge - b.targetAge);
 		for (const task of tasks) {
-			this.delete(task)
-			task.run()
+			this.delete(task);
+			task.run();
 		}
 
-		this._nextTick()
+		this._nextTick();
 	}
 
 	/**
@@ -171,12 +171,12 @@ class Scheduler extends (EventEmitter as new () => TypedEventEmitter<SchedulerEv
 	private _nextTick(): void {
 		if (!this.#running) {
 			if (this.#schedulerStopResolve) {
-				this.#schedulerStopResolve(true)
-				this.#schedulerStopResolve = null
+				this.#schedulerStopResolve(true);
+				this.#schedulerStopResolve = null;
 			}
-			return
+			return;
 		}
-		setImmediate(this.tick.bind(this))
+		setImmediate(this.tick.bind(this));
 	}
 
 	/**
@@ -186,9 +186,9 @@ class Scheduler extends (EventEmitter as new () => TypedEventEmitter<SchedulerEv
 	 * @param targetAge Target scheduler age (tick) to run task at
 	 */
 	public scheduleAge(code: () => void, targetAge: number): Scheduler.Task {
-		const task = new Scheduler.Task(code, targetAge, this)
-		this.#tasks.push(task)
-		return task
+		const task = new Scheduler.Task(code, targetAge, this);
+		this.#tasks.push(task);
+		return task;
 	}
 
 	/**
@@ -198,7 +198,7 @@ class Scheduler extends (EventEmitter as new () => TypedEventEmitter<SchedulerEv
 	 * @param ticks Number of ticks to wait before running the task
 	 */
 	public scheduleTicks(code: () => void, ticks: number): Scheduler.Task {
-		return this.scheduleAge(code, this.age + ticks)
+		return this.scheduleAge(code, this.age + ticks);
 	}
 
 	/**
@@ -206,18 +206,18 @@ class Scheduler extends (EventEmitter as new () => TypedEventEmitter<SchedulerEv
 	 *
 	 * @param code Task code
 	 */
-	public schedule(code: () => void): Scheduler.Task
+	public schedule(code: () => void): Scheduler.Task;
 	/**
 	 * Schedule a task
 	 *
 	 * @param task The task
 	 */
-	public schedule(task: Scheduler.Task): Scheduler.Task
+	public schedule(task: Scheduler.Task): Scheduler.Task;
 	public schedule(a: (() => void) | Scheduler.Task): Scheduler.Task {
 		if (a instanceof Scheduler.Task) {
-			this.#tasks.push(a)
-			return a
-		} else return this.scheduleTicks(a, 0)
+			this.#tasks.push(a);
+			return a;
+		} else return this.scheduleTicks(a, 0);
 	}
 
 	/**
@@ -227,10 +227,10 @@ class Scheduler extends (EventEmitter as new () => TypedEventEmitter<SchedulerEv
 	 * @internal
 	 */
 	private delete(task: Scheduler.Task): boolean {
-		const index = this.#tasks.indexOf(task)
-		if (index < 0) return false
-		this.#tasks.splice(index, 1)
-		return true
+		const index = this.#tasks.indexOf(task);
+		if (index < 0) return false;
+		this.#tasks.splice(index, 1);
+		return true;
 	}
 
 	/**
@@ -240,9 +240,9 @@ class Scheduler extends (EventEmitter as new () => TypedEventEmitter<SchedulerEv
 	 * @returns `false` if the task was not found in the scheduler queue (possibly already executed), `true` otherwise
 	 */
 	public cancel(task: Scheduler.Task): boolean {
-		const deleted = this.delete(task)
-		if (deleted) task.emit("cancelled")
-		return deleted
+		const deleted = this.delete(task);
+		if (deleted) task.emit("cancelled");
+		return deleted;
 	}
 
 	/**
@@ -251,7 +251,7 @@ class Scheduler extends (EventEmitter as new () => TypedEventEmitter<SchedulerEv
 	 * @param id Task ID
 	 */
 	public getTaskById(id: string): Scheduler.Task | undefined {
-		return this.#tasks.find((task) => task.id === id)
+		return this.#tasks.find((task) => task.id === id);
 	}
 }
 
@@ -260,13 +260,13 @@ namespace Scheduler {
 		/**
 		 * Task is not planned to be executed due to the scheduler being terminated
 		 */
-		notPlanned: () => void
+		notPlanned: () => void;
 
 		/**
 		 * Task is cancelled
 		 */
-		cancelled: () => void
-	}
+		cancelled: () => void;
+	};
 
 	/**
 	 * Scheduler task
@@ -275,27 +275,27 @@ namespace Scheduler {
 		/**
 		 * Task ID
 		 */
-		public readonly id = randomUUID()
+		public readonly id = randomUUID();
 
 		/**
 		 * Task code
 		 */
-		private readonly code: () => void
+		private readonly code: () => void;
 
 		/**
 		 * Target scheduler age (tick) to run task at
 		 */
-		public readonly targetAge: number
+		public readonly targetAge: number;
 
 		/**
 		 * Task scheduler
 		 */
-		public readonly scheduler: Scheduler
+		public readonly scheduler: Scheduler;
 
 		/**
 		 * Whether the task has been executed
 		 */
-		#executed: boolean = false
+		#executed: boolean = false;
 
 		/**
 		 * Create scheduler task
@@ -309,17 +309,17 @@ namespace Scheduler {
 			targetAge: number,
 			scheduler: Scheduler
 		) {
-			super()
-			this.code = code
-			this.targetAge = targetAge
-			this.scheduler = scheduler
+			super();
+			this.code = code;
+			this.targetAge = targetAge;
+			this.scheduler = scheduler;
 		}
 
 		/**
 		 * Whether the task has been executed
 		 */
 		public get executed(): boolean {
-			return this.#executed
+			return this.#executed;
 		}
 
 		/**
@@ -332,7 +332,7 @@ namespace Scheduler {
 		 * To check if the task was actually run, use {@link Task#executed}
 		 */
 		public get remainingTicks(): number {
-			return this.targetAge - this.scheduler.age
+			return this.targetAge - this.scheduler.age;
 		}
 
 		/**
@@ -340,7 +340,7 @@ namespace Scheduler {
 		 * @see Scheduler#cancel
 		 */
 		public cancel(): boolean {
-			return this.scheduler.cancel(this)
+			return this.scheduler.cancel(this);
 		}
 
 		/**
@@ -348,9 +348,9 @@ namespace Scheduler {
 		 * @internal
 		 */
 		public run(): void {
-			this.code()
-			this.#executed = true
-			this.removeAllListeners()
+			this.code();
+			this.#executed = true;
+			this.removeAllListeners();
 		}
 	}
 
@@ -358,8 +358,8 @@ namespace Scheduler {
 		/**
 		 * All repeats have been executed
 		 */
-		completed: () => void
-	}
+		completed: () => void;
+	};
 
 	/**
 	 * A repeating task
@@ -370,42 +370,42 @@ namespace Scheduler {
 		/**
 		 * Number of times the task will repeat. This may be `Infinity`, in which case the tasks repeats until the scheduler is terminated.
 		 */
-		public readonly repeats: number
+		public readonly repeats: number;
 
 		/**
 		 * Interval between each repeat
 		 */
-		public readonly interval: number
+		public readonly interval: number;
 
 		/**
 		 * Target scheduler age (tick) for first execution
 		 */
-		public readonly targetAge: number
+		public readonly targetAge: number;
 
 		/**
 		 * Task scheduler
 		 */
-		public readonly scheduler: Scheduler
+		public readonly scheduler: Scheduler;
 
 		/**
 		 * Task code
 		 */
-		private readonly code: () => void
+		private readonly code: () => void;
 
 		/**
 		 * Current task
 		 */
-		#task: Task | null = null
+		#task: Task | null = null;
 
 		/**
 		 * Number of tasks that have been executed
 		 */
-		#executed: number = 0
+		#executed: number = 0;
 
 		/**
 		 * Whether this repeating task has been cancelled
 		 */
-		#cancelled: boolean = false
+		#cancelled: boolean = false;
 
 		/**
 		 * Create repeating task
@@ -423,28 +423,28 @@ namespace Scheduler {
 			repeats: number = Infinity,
 			targetAge: number = 0
 		) {
-			super()
-			this.code = code
-			this.interval = interval
-			this.scheduler = scheduler
-			this.repeats = repeats
-			this.targetAge = targetAge
-			if (this.repeats > 0) this.createTask()
+			super();
+			this.code = code;
+			this.interval = interval;
+			this.scheduler = scheduler;
+			this.repeats = repeats;
+			this.targetAge = targetAge;
+			if (this.repeats > 0) this.createTask();
 
 			this.scheduler.on("terminating", () => {
 				//console.log(this.task?.executed, this.task);
-				if (this.task?.executed) this.emit("notPlanned")
-			})
+				if (this.task?.executed) this.emit("notPlanned");
+			});
 		}
 
 		/**
 		 * Cancel this repeating task
 		 */
 		public cancel(): void {
-			if (this.#cancelled) return
-			this.#cancelled = true
-			if (this.#task) this.#task.cancel()
-			else this.emit("cancelled")
+			if (this.#cancelled) return;
+			this.#cancelled = true;
+			if (this.#task) this.#task.cancel();
+			else this.emit("cancelled");
 		}
 
 		/**
@@ -455,41 +455,41 @@ namespace Scheduler {
 				this.#task = this.scheduler.scheduleAge(
 					() => this.taskCode(),
 					this.targetAge
-				)
+				);
 			else
 				this.#task = this.scheduler.scheduleAge(
 					() => this.taskCode(),
 					this.scheduler.age + this.interval
-				)
-			this.#task.once("cancelled", () => this.emit("cancelled"))
-			this.#task.once("notPlanned", () => this.emit("notPlanned"))
+				);
+			this.#task.once("cancelled", () => this.emit("cancelled"));
+			this.#task.once("notPlanned", () => this.emit("notPlanned"));
 		}
 
 		/**
 		 * Scheduled task code
 		 */
 		private taskCode(): void {
-			this.code()
-			++this.#executed
+			this.code();
+			++this.#executed;
 			if (this.#executed < this.repeats) {
-				if (!this.#cancelled) this.createTask()
-			} else this.emit("completed")
+				if (!this.#cancelled) this.createTask();
+			} else this.emit("completed");
 		}
 
 		/**
 		 * Get current task
 		 */
 		public get task(): Task | null {
-			return this.#task
+			return this.#task;
 		}
 
 		/**
 		 * Number of times the task has been executed
 		 */
 		public get executed(): number {
-			return this.#executed
+			return this.#executed;
 		}
 	}
 }
 
-export default Scheduler
+export default Scheduler;

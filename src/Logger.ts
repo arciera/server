@@ -1,10 +1,10 @@
 class Logger {
-	private readonly name: string
-	private readonly logLevel: Logger.Level
+	private readonly name: string;
+	private readonly logLevel: Logger.Level;
 
 	public constructor(name: string, logLevel: Logger.Level) {
-		this.name = name
-		this.logLevel = logLevel
+		this.name = name;
+		this.logLevel = logLevel;
 	}
 
 	/**
@@ -12,7 +12,7 @@ class Logger {
 	 * @param obj Object to print
 	 */
 	private stdout(...obj: any[]): void {
-		console.log(...obj)
+		console.log(...obj);
 	}
 
 	/**
@@ -20,7 +20,7 @@ class Logger {
 	 * @param obj Object to print
 	 */
 	private stderr(...obj: any[]): void {
-		console.error(...obj)
+		console.error(...obj);
 	}
 
 	/**
@@ -29,7 +29,7 @@ class Logger {
 	 * @param message Message to format
 	 */
 	private format(level: Logger.Level, message: string): string {
-		return `${Logger.text256(240)}[${new Date().toISOString()}] ${Logger.ansi.format.reset}${Logger.level[level]}[${this.name}/${level}]${Logger.ansi.format.reset} ${message}${Logger.ansi.format.reset}`
+		return `${Logger.text256(240)}[${new Date().toISOString()}] ${Logger.ansi.format.reset}${Logger.level[level]}[${this.name}/${level}]${Logger.ansi.format.reset} ${message}${Logger.ansi.format.reset}`;
 	}
 
 	/**
@@ -43,7 +43,7 @@ class Logger {
 			this[level === Logger.Level.ERROR ? "stderr" : "stdout"](
 				this.format(level, message),
 				...obj
-			)
+			);
 		}
 	}
 
@@ -53,7 +53,7 @@ class Logger {
 	 * @param [obj] Objects to print
 	 */
 	public info(message: string, ...obj: any[]): void {
-		this.log(Logger.Level.INFO, message, ...obj)
+		this.log(Logger.Level.INFO, message, ...obj);
 	}
 
 	/**
@@ -62,7 +62,7 @@ class Logger {
 	 * @param [obj] Objects to print
 	 */
 	public warn(message: string, ...obj: any[]): void {
-		this.log(Logger.Level.WARN, message, ...obj)
+		this.log(Logger.Level.WARN, message, ...obj);
 	}
 
 	/**
@@ -71,7 +71,7 @@ class Logger {
 	 * @param [obj] Objects to print
 	 */
 	public error(message: string, ...obj: any[]): void {
-		this.log(Logger.Level.ERROR, message, ...obj)
+		this.log(Logger.Level.ERROR, message, ...obj);
 	}
 
 	/**
@@ -80,7 +80,7 @@ class Logger {
 	 * @param [obj] Objects to print
 	 */
 	public success(message: string, ...obj: any[]): void {
-		this.log(Logger.Level.SUCCESS, message, ...obj)
+		this.log(Logger.Level.SUCCESS, message, ...obj);
 	}
 
 	/**
@@ -92,7 +92,7 @@ class Logger {
 		return (
 			Logger.LevelHierarchy.indexOf(level) >=
 			Logger.LevelHierarchy.indexOf(this.logLevel)
-		)
+		);
 	}
 
 	/**
@@ -101,7 +101,7 @@ class Logger {
 	 * @param [obj] Objects to print
 	 */
 	public debug(message: string, ...obj: any[]): void {
-		this.log(Logger.Level.DEBUG, message, ...obj)
+		this.log(Logger.Level.DEBUG, message, ...obj);
 	}
 
 	/**
@@ -157,7 +157,7 @@ class Logger {
 			hidden: "\x1b[8m",
 			dim: "\x1b[2m",
 		},
-	})
+	});
 
 	/**
 	 * Level formatting
@@ -168,7 +168,7 @@ class Logger {
 		SUCCESS: Logger.ansi.text.bright.green,
 		WARN: Logger.ansi.text.bright.yellow,
 		ERROR: Logger.ansi.text.bright.red,
-	})
+	});
 
 	/**
 	 * Level hierarchy
@@ -179,14 +179,14 @@ class Logger {
 		"SUCCESS",
 		"WARN",
 		"ERROR",
-	])
+	]);
 
 	/**
 	 * 256 colors
 	 * @param colour Colour ID from 0 to 255
 	 */
 	public static text256(colour: number): string {
-		return `\x1b[38;5;${colour}m`
+		return `\x1b[38;5;${colour}m`;
 	}
 
 	/**
@@ -194,7 +194,7 @@ class Logger {
 	 * @param colour Colour ID from 0 to 255
 	 */
 	public static background256(colour: number): string {
-		return `\x1b[48;5;${colour}m`
+		return `\x1b[48;5;${colour}m`;
 	}
 
 	/**
@@ -204,7 +204,7 @@ class Logger {
 	 * @param blue Blue value from 0 to 255
 	 */
 	public static textRGB(red: number, green: number, blue: number): string {
-		return `\x1b[38;2;${red};${green};${blue}m`
+		return `\x1b[38;2;${red};${green};${blue}m`;
 	}
 
 	/**
@@ -218,7 +218,7 @@ class Logger {
 		green: number,
 		blue: number
 	): string {
-		return `\x1b[48;2;${red};${green};${blue}m`
+		return `\x1b[48;2;${red};${green};${blue}m`;
 	}
 }
 
@@ -254,4 +254,4 @@ namespace Logger {
 	}
 }
 
-export default Logger
+export default Logger;

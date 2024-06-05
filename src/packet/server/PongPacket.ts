@@ -1,9 +1,9 @@
-import ServerPacket from "../../ServerPacket.js"
-import PingPacket from "../client/PingPacket.js"
-import { S2C } from "../Packets.js"
+import ServerPacket from "../../ServerPacket.js";
+import PingPacket from "../client/PingPacket.js";
+import { S2C } from "../Packets.js";
 
 export default class PongPacket extends ServerPacket {
-	public static readonly id = S2C.Pong
+	public static readonly id = S2C.Pong;
 
 	public constructor(c2s: PingPacket) {
 		super(
@@ -11,6 +11,6 @@ export default class PongPacket extends ServerPacket {
 				ServerPacket.writeVarInt(PongPacket.id),
 				ServerPacket.writeLong(c2s.data.payload),
 			])
-		)
+		);
 	}
 }

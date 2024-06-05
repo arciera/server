@@ -1,8 +1,8 @@
-import net from "node:net"
-import * as crypto from "node:crypto"
-import Server from "./Server"
-import Packet from "./Packet.js"
-import Logger from "./Logger.js"
+import net from "node:net";
+import * as crypto from "node:crypto";
+import Server from "./Server";
+import Packet from "./Packet.js";
+import Logger from "./Logger.js";
 
 /**
  * A TCP socket connection to the server.
@@ -11,62 +11,66 @@ class Connection {
 	/**
 	 * A unique identifier for this connection.
 	 */
-	public readonly id: string
+	public readonly id: string;
 	/**
 	 * The TCP socket for this connection.
 	 */
-	public readonly socket: net.Socket
+	public readonly socket: net.Socket;
 	/**
 	 * The server to which this connection belongs.
 	 */
-	public readonly server: Server
+	public readonly server: Server;
 	/**
 	 * The state of the connection.
 	 */
-	#state: Connection.State = Connection.State.NONE
+	#state: Connection.State = Connection.State.NONE;
 
 	/**
 	 * The state of the connection.
 	 */
 	public get state(): Connection.State {
-		return this.#state
+		return this.#state;
 	}
 
 	/** @internal */
 	public _setState(state: Connection.State): void {
 		new Logger("State", Logger.Level.DEBUG).debug(
 			`Switching state from ${this.#state} to ${state}`
-		)
-		this.#state = state
+		);
+		this.#state = state;
 	}
 
 	/**
 	 * Packet fragment this connection is currently sending to the server.
 	 * @internal
 	 */
-	private currentPacketFragment: Packet = new Packet()
+	private currentPacketFragment: Packet = new Packet();
 
 	constructor(socket: net.Socket, server: Server) {
-		this.id = crypto.randomBytes(16).toString("hex")
-		this.socket = socket
-		this.server = server
+		this.id = crypto.randomBytes(16).toString("hex");
+		this.socket = socket;
+		this.server = server;
 	}
 
 	/** @internal */
 	public incomingPacketFragment(data: number) {
 		if (this.currentPacketFragment.push(data)) {
-			const p = this.currentPacketFragment.getTypedClient(this)
+			const p = this.currentPacketFragment.getTypedClient(this);
 			if (p) {
-				p.execute(this, this.server)
-				this.server.emit("packet", p, this)
-				this.server.emit(`packet.${p.constructor.name}` as any, p, this)
+				p.execute(this, this.server);
+				this.server.emit("packet", p, this);
+				this.server.emit(
+					`packet.${p.constructor.name}` as any,
+					p,
+					this
+				);
 			} else
 				this.server.emit(
 					"unknownPacket",
 					this.currentPacketFragment,
 					this
-				)
-			this.currentPacketFragment = new Packet()
+				);
+			this.currentPacketFragment = new Packet();
 		}
 	}
 
@@ -75,7 +79,7 @@ class Connection {
 	 * @param [reason] The reason for the disconnect.
 	 */
 	public disconnect(reason?: string): Promise<boolean> {
-		return this.server.connections.disconnect(this.id, reason)
+		return this.server.connections.disconnect(this.id, reason);
 	}
 
 	/**
@@ -85,7 +89,7 @@ class Connection {
 		return (
 			!this.socket.destroyed &&
 			this.server.connections.get(this.id) !== null
-		)
+		);
 	}
 }
 
@@ -129,4 +133,4 @@ namespace Connection {
 	}
 }
 
-export default Connection
+export default Connection;
