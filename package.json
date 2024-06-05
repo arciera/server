@@ -1,22 +1,24 @@
 {
-  "name": "archcraft",
-  "version": "1.0.0",
-  "description": "",
-  "main": "dist/index.js",
-  "type": "module",
-  "scripts": {
-    "build": "tsc",
-    "build:start": "npm run build && npm run start",
-    "bundle": "ncc build ./index.ts -o build -m",
-    "start": "node dist/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "GNU GPLv3",
-  "devDependencies": {
-    "@types/node": "^20.12.12",
-    "typescript": "^5.4.5",
-    "@vercel/ncc": "^0.38.1"
-  }
+	"name": "archcraft",
+	"version": "1.0.0",
+	"description": "",
+	"main": "dist/index.js",
+	"type": "module",
+	"scripts": {
+		"build": "tsc",
+		"build:start": "npm run build && npm run start",
+		"bundle": "ncc build ./index.ts -o build -m",
+		"start": "node dist/index.js",
+		"lint": "prettier . --write",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "GNU GPLv3",
+	"devDependencies": {
+		"@types/node": "^20.12.7",
+		"@vercel/ncc": "^0.38.1",
+		"prettier": "3.2.5",
+		"typescript": "^5.4.5"
+	}
 }

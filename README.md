@@ -34,6 +34,7 @@ Fixing bugs is our utmost priority.
     <summary>I can't join the world!</summary>
 
 > Arciera server is a bare-bones server and does not have a world. If you want to connect to a world, you need to use a plugin that provides a world. Any additional features beyond simply establishing a connection require a plugin.
+
 </details>
 
 ## Contributing

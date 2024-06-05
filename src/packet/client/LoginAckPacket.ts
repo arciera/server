@@ -3,13 +3,13 @@ import {
 	TypedClientPacketStatic,
 } from "../../types/TypedPacket";
 import StaticImplements from "../../decorator/StaticImplements.js";
-import ParsedPacket from "../../ParsedPacket.js";
 import Server from "../../Server";
+import ParsedPacket from "../../ParsedPacket";
 import Connection from "../../Connection.js";
 import { C2S } from "../Packets.js";
 
 @StaticImplements<TypedClientPacketStatic>()
-export default class LoginPacket {
+export default class LoginAckPacket {
 	public readonly packet: ParsedPacket;
 
 	public readonly data;
@@ -21,18 +21,14 @@ export default class LoginPacket {
 	public constructor(packet: import("../../ParsedPacket").default) {
 		this.packet = packet;
 
-		this.data = {
-			username: this.packet.getString()!,
-			hasUUID: this.packet.getBoolean()!,
-			uuid: this.packet.getUUID()!,
-		};
+		this.data = {} as const;
 	}
 
 	execute(conn: Connection, _server: Server): void {
-		conn._setState(Connection.State.LOGIN);
+		conn._setState(Connection.State.CONFIGURATION);
 	}
 
-	public static readonly id = C2S.Login;
+	public static readonly id = C2S.LoginAcknowledge;
 
 	public static isThisPacket(
 		data: ParsedPacket,
@@ -41,11 +37,7 @@ export default class LoginPacket {
 		if (conn.state !== Connection.State.LOGIN) return null;
 		try {
 			const p = new this(data);
-			return p.packet.id === this.id &&
-				p.data.username !== null &&
-				p.data.username.match(/^[.*]?[A-Za-z0-9_]{3,16}$/) !== null
-				? p
-				: null;
+			return p.packet.id === this.id ? p : null;
 		} catch {
 			return null;
 		}

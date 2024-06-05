@@ -3,49 +3,42 @@ import {
 	TypedClientPacketStatic,
 } from "../../types/TypedPacket";
 import StaticImplements from "../../decorator/StaticImplements.js";
-import ParsedPacket from "../../ParsedPacket.js";
 import Server from "../../Server";
+import ParsedPacket from "../../ParsedPacket";
 import Connection from "../../Connection.js";
 import { C2S } from "../Packets.js";
 
 @StaticImplements<TypedClientPacketStatic>()
-export default class LoginPacket {
+export default class PingPacket {
 	public readonly packet: ParsedPacket;
 
 	public readonly data;
 
 	/**
-	 * Create a new HandshakePacket
+	 * Create a new PingPacket
 	 * @param packet
 	 */
 	public constructor(packet: import("../../ParsedPacket").default) {
 		this.packet = packet;
 
 		this.data = {
-			username: this.packet.getString()!,
-			hasUUID: this.packet.getBoolean()!,
-			uuid: this.packet.getUUID()!,
-		};
+			payload: this.packet.getLong()!,
+		} as const;
 	}
 
-	execute(conn: Connection, _server: Server): void {
-		conn._setState(Connection.State.LOGIN);
+	execute(_conn: Connection, _server: Server): void {
+		// pass
 	}
 
-	public static readonly id = C2S.Login;
+	public static readonly id = C2S.Ping;
 
 	public static isThisPacket(
 		data: ParsedPacket,
-		conn: Connection
+		_conn: Connection
 	): TypedClientPacket | null {
-		if (conn.state !== Connection.State.LOGIN) return null;
 		try {
 			const p = new this(data);
-			return p.packet.id === this.id &&
-				p.data.username !== null &&
-				p.data.username.match(/^[.*]?[A-Za-z0-9_]{3,16}$/) !== null
-				? p
-				: null;
+			return p.packet.id === this.id ? p : null;
 		} catch {
 			return null;
 		}
